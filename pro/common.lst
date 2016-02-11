@@ -1,0 +1,55 @@
+C51 COMPILER V9.02   COMMON                                                                01/31/2016 12:31:26 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE COMMON
+OBJECT MODULE PLACED IN .\common.obj
+COMPILER INVOKED BY: D:\Program Files\keil4\C51\BIN\C51.EXE ..\src\common.c BROWSE INCDIR(..\head) DEBUG OBJECTEXTEND PR
+                    -INT(.\common.lst) OBJECT(.\common.obj)
+
+line level    source
+
+   1          #include "common.h"
+   2          
+   3          /*****************************************
+   4           *∫¡√Î—” ±∫Ø ˝
+   5           *¿˝:delay_ms(1000);    —” ±1000∫¡√Î 
+   6           *****************************************/
+   7          void delay_ms(unsigned int ms)
+   8          {
+   9   1              unsigned int onetime = 500;
+  10   1      
+  11   1              while(ms --)
+  12   1              {
+  13   2                      while(onetime --);
+  14   2                      onetime = 500;
+  15   2              }
+  16   1      }
+  17          
+  18          /*****************************************
+  19           *Œ¢√Î—” ±∫Ø ˝
+  20           *¿˝:delay_us(1000);    —” ±1000Œ¢√Î 
+  21           *****************************************/
+  22          void delay_us(unsigned int us)
+  23          {
+  24   1              while(us --)
+  25   1              {
+  26   2                      _nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
+  27   2                      _nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
+  28   2                      _nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
+  29   2                      
+  30   2              }
+  31   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     73    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

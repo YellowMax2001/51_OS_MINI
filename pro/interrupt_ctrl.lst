@@ -1,0 +1,113 @@
+C51 COMPILER V9.02   INTERRUPT_CTRL                                                        01/31/2016 12:31:26 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE INTERRUPT_CTRL
+OBJECT MODULE PLACED IN .\interrupt_ctrl.obj
+COMPILER INVOKED BY: D:\Program Files\keil4\C51\BIN\C51.EXE ..\src\interrupt_ctrl.c BROWSE INCDIR(..\head) DEBUG OBJECTE
+                    -XTEND PRINT(.\interrupt_ctrl.lst) OBJECT(.\interrupt_ctrl.obj)
+
+line level    source
+
+   1          #include <interrupt_ctrl.h>
+   2          
+   3          /*****************************************
+   4           *优先级设定(可设优先级有四个等级)
+   5           *例: set_priority(IIT0,three); 设定IT0优先级3，最高优先级
+   6           *由于 IT0已经定义过，所以改用IIT0 
+   7           *****************************************/
+   8          void set_priority(intrupt_select is,inrupt_priority ip)
+   9          {
+  10   1              switch(is)
+  11   1              {
+  12   2                      case PCA:{switch(ip){
+  13   4                                              case zero:   {IPH = (IPH & 0x80) ? (IPH ^ 0x80) : IPH; PPCA = 0; break;}
+  14   4                                              case first:  {IPH = (IPH & 0x80) ? (IPH ^ 0x80) : IPH; PPCA = 1; break;}
+  15   4                                              case second: {IPH = (IPH | 0x80);    PPCA = 0; break;}
+  16   4                                              case three:  {IPH = (IPH | 0x80);    PPCA = 1; break;}
+  17   4                                              default: break;}
+  18   3                                       }
+  19   2                      case LVD:{switch(ip){
+  20   4                                              case zero:   {IPH = (IPH & 0x40) ? (IPH ^ 0x40) : IPH; PLVD = 0; break;}
+  21   4                                              case first:  {IPH = (IPH & 0x40) ? (IPH ^ 0x40) : IPH; PLVD = 1; break;}
+  22   4                                              case second: {IPH = (IPH | 0x40);    PLVD = 0; break;}
+  23   4                                              case three:  {IPH = (IPH | 0x40);    PLVD = 1; break;}
+  24   4                                              default: break;}
+  25   3                                       }
+  26   2                      case ADC:{switch(ip){
+  27   4                                              case zero:   {IPH = (IPH & 0x20) ? (IPH ^ 0x20) : IPH; PADC = 0; break;}
+  28   4                                              case first:  {IPH = (IPH & 0x20) ? (IPH ^ 0x20) : IPH; PADC = 1; break;}
+  29   4                                              case second: {IPH = (IPH | 0x20);    PADC = 0; break;}
+  30   4                                              case three:  {IPH = (IPH | 0x20);    PADC = 1; break;}
+  31   4                                              default: break;}
+  32   3                                       }
+  33   2                      case ES1:{switch(ip){
+  34   4                                              case zero:   {IPH = (IPH & 0x10) ? (IPH ^ 0x10) : IPH; PS = 0; break;}
+  35   4                                              case first:  {IPH = (IPH & 0x10) ? (IPH ^ 0x10) : IPH; PS = 1; break;}
+  36   4                                              case second: {IPH = (IPH | 0x10);    PS = 0; break;}
+  37   4                                              case three:  {IPH = (IPH | 0x10);    PS = 1; break;}
+  38   4                                              default: break;}
+  39   3                                       }
+  40   2                      case IIT1:{switch(ip){
+  41   4                                              case zero:   {IPH = (IPH & 0x08) ? (IPH ^ 0x08) : IPH; PT1 = 0; break;}
+  42   4                                              case first:  {IPH = (IPH & 0x08) ? (IPH ^ 0x08) : IPH; PT1 = 1; break;}
+  43   4                                              case second: {IPH = (IPH | 0x08);    PT1 = 0; break;}
+  44   4                                              case three:  {IPH = (IPH | 0x08);    PT1 = 1; break;}
+  45   4                                              default: break;}
+  46   3                                       }
+  47   2                      case IEX1:{switch(ip){
+  48   4                                              case zero:   {IPH = (IPH & 0x04) ? (IPH ^ 0x04) : IPH; PX1 = 0; break;}
+  49   4                                              case first:  {IPH = (IPH & 0x04) ? (IPH ^ 0x04) : IPH; PX1 = 1; break;}
+  50   4                                              case second: {IPH = (IPH | 0x04);    PX1 = 0; break;}
+  51   4                                              case three:  {IPH = (IPH | 0x04);    PX1 = 1; break;}
+  52   4                                              default: break;}
+  53   3                                       }
+  54   2                      case IIT0:{switch(ip){
+C51 COMPILER V9.02   INTERRUPT_CTRL                                                        01/31/2016 12:31:26 PAGE 2   
+
+  55   4                                              case zero:   {IPH = (IPH & 0x02) ? (IPH ^ 0x02) : IPH; PT0 = 0; break;}
+  56   4                                              case first:  {IPH = (IPH & 0x02) ? (IPH ^ 0x02) : IPH; PT0 = 1; break;}
+  57   4                                              case second: {IPH = (IPH | 0x02);    PT0 = 0; break;}
+  58   4                                              case three:  {IPH = (IPH | 0x02);    PT0 = 1; break;}
+  59   4                                              default: break;}
+  60   3                               }
+  61   2                      case IEX0:{switch(ip){
+  62   4                                              case zero:   {IPH = (IPH & 0x01) ? (IPH ^ 0x01) : IPH; PX0 = 0; break;}
+  63   4                                              case first:  {IPH = (IPH & 0x01) ? (IPH ^ 0x01) : IPH; PX0 = 1; break;}
+  64   4                                              case second: {IPH = (IPH | 0x01);    PX0 = 0; break;}
+  65   4                                              case three:  {IPH = (IPH | 0x01);    PX0 = 1; break;}
+  66   4                                              default: break;}
+  67   3                                       }
+  68   2                      case SPI:{switch(ip){
+  69   4                                              case zero:   {IP2H = (IP2H & 0x02) ? (IP2H ^ 0x02) : IP2H; IP2 = (IP2 & 0x02) ? (IP2 ^ 0x02) : IP2; b
+             -reak;}
+  70   4                                              case first:  {IP2H = (IP2H & 0x02) ? (IP2H ^ 0x02) : IP2H; IP2 = (IP2 | 0x02); break;}
+  71   4                                              case second: {IP2H = (IP2H | 0x02);    IP2 = (IP2 & 0x02) ? (IP2 ^ 0x02) : IP2; break;}
+  72   4                                              case three:  {IP2H = (IP2H | 0x02);    IP2 = (IP2 | 0x02); break;}
+  73   4                                              default: break;}
+  74   3                                       }
+  75   2                      case ES2:{switch(ip){
+  76   4                                              case zero:   {IP2H = (IP2H & 0x01) ? (IPH ^ 0x01) : IP2H; IP2 = (IP2 & 0x01) ? (IP2 ^ 0x01) : IP2; br
+             -eak;}
+  77   4                                              case first:  {IP2H = (IP2H & 0x01) ? (IPH ^ 0x01) : IP2H; IP2 = (IP2 | 0x01); break;}
+  78   4                                              case second: {IP2H = (IP2H | 0x01);    IP2 = (IP2 & 0x01) ? (IP2 ^ 0x01) : IP2; break;}
+  79   4                                              case three:  {IP2H = (IP2H | 0x01);    IP2 = (IP2 | 0x01); break;}
+  80   4                                              default: break;}
+  81   3                                       }                                              
+  82   2                                       
+  83   2                      default: break;          
+  84   2              }
+  85   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    759    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
