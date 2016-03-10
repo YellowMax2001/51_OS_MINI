@@ -1,0 +1,144 @@
+; .\common.SRC generated from: ..\src\common.c
+; COMPILER INVOKED BY:
+;        D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\common.c BROWSE INCDIR(../head) DEBUG OBJECTEXTEND PRINT(.\common.lst) SRC(.\common.SRC)
+
+
+NAME	COMMON
+
+?PR?_delay_ms?COMMON SEGMENT CODE 
+?DT?_delay_ms?COMMON SEGMENT DATA OVERLAYABLE 
+?PR?_delay_us?COMMON SEGMENT CODE 
+	PUBLIC	_delay_us
+	PUBLIC	_delay_ms
+
+	RSEG  ?DT?_delay_ms?COMMON
+?_delay_ms?BYTE:
+          i?041:   DS   2
+; #include "common.h"
+; 
+; /*****************************************
+;  *∫¡√Î—” ±∫Ø ˝
+;  *¿˝:delay_ms(1000);    —” ±1000∫¡√Î 
+;  *****************************************/
+; void delay_ms(unsigned int ms)
+
+	RSEG  ?PR?_delay_ms?COMMON
+_delay_ms:
+	USING	0
+			; SOURCE LINE # 7
+;---- Variable 'ms?040' assigned to Register 'R6/R7' ----
+; {
+			; SOURCE LINE # 8
+?C0001:
+; 	unsigned int i;
+; 
+; 	while(ms --)
+			; SOURCE LINE # 11
+	MOV  	A,R7
+	DEC  	R7
+	MOV  	R4,AR6
+	JNZ  	?C0009
+	DEC  	R6
+?C0009:
+	ORL  	A,R4
+	JZ   	?C0005
+; 	{
+			; SOURCE LINE # 12
+?C0003:
+; 		while(i --);
+			; SOURCE LINE # 13
+	MOV  	A,i?041+01H
+	DEC  	i?041+01H
+	MOV  	R4,i?041
+	JNZ  	?C0010
+	DEC  	i?041
+?C0010:
+	ORL  	A,R4
+	JNZ  	?C0003
+?C0004:
+; 		i = 24000;
+			; SOURCE LINE # 14
+	MOV  	i?041,#05DH
+	MOV  	i?041+01H,#0C0H
+; 	}
+			; SOURCE LINE # 15
+	SJMP 	?C0001
+; 
+; }
+			; SOURCE LINE # 17
+?C0005:
+	RET  	
+; END OF _delay_ms
+
+; 
+; /*****************************************
+;  *Œ¢√Î—” ±∫Ø ˝
+;  *¿˝:delay_us(1000);    —” ±1000Œ¢√Î 
+;  *****************************************/
+; void delay_us(unsigned int us)
+
+	RSEG  ?PR?_delay_us?COMMON
+_delay_us:
+	USING	0
+			; SOURCE LINE # 23
+;---- Variable 'us?142' assigned to Register 'R6/R7' ----
+; {
+			; SOURCE LINE # 24
+?C0006:
+; 	while(us --)
+			; SOURCE LINE # 25
+	MOV  	A,R7
+	DEC  	R7
+	MOV  	R4,AR6
+	JNZ  	?C0011
+	DEC  	R6
+?C0011:
+	ORL  	A,R4
+	JZ   	?C0008
+; 	{
+			; SOURCE LINE # 26
+; 		_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
+			; SOURCE LINE # 27
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+; 		_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
+			; SOURCE LINE # 28
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+; 		_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
+			; SOURCE LINE # 29
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+	NOP  	
+; 		
+; 	}
+			; SOURCE LINE # 31
+	SJMP 	?C0006
+; }			; SOURCE LINE # 32
+?C0008:
+	RET  	
+; END OF _delay_us
+
+	END

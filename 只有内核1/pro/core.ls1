@@ -1,0 +1,1433 @@
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.02
+OBJECT MODULE PLACED IN .\core.OBJ
+ASSEMBLER INVOKED BY: D:\msprograms\keil4\C51\BIN\A51.EXE .\core.src PR(.\core.ls1) EP DEBUG
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; .\core.SRC generated from: ..\src\core.c
+                       2     ; COMPILER INVOKED BY:
+                       3     ;        D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\core.c OPTIMIZE(2,SPEED) BROWSE INCDIR(
+                             ../head) DEBUG OBJECTEXTEND PRINT(.\core.lst) SRC(.\core.SRC)
+                       4     
+                       5     $nomod51 
+                       6     
+                       7     NAME    CORE
+                       8     
+  00DA                 9     CCF2    BIT     0D8H.2
+  0092                10     P1M0    DATA    092H
+  0093                11     P0M1    DATA    093H
+  0096                12     P2M0    DATA    096H
+  0091                13     P1M1    DATA    091H
+  0080                14     P0      DATA    080H
+  00B2                15     P3M0    DATA    0B2H
+  0095                16     P2M1    DATA    095H
+  0090                17     P1      DATA    090H
+  00B4                18     P4M0    DATA    0B4H
+  00B1                19     P3M1    DATA    0B1H
+  00A0                20     P2      DATA    0A0H
+  00AB                21     WKTCH   DATA    0ABH
+  00CA                22     P5M0    DATA    0CAH
+  00B3                23     P4M1    DATA    0B3H
+  00B0                24     P3      DATA    0B0H
+  00CC                25     P6M0    DATA    0CCH
+  00C9                26     P5M1    DATA    0C9H
+  00C0                27     P4      DATA    0C0H
+  00D6                28     AC      BIT     0D0H.6
+  00F6                29     PWMIF   DATA    0F6H
+  00E2                30     P7M0    DATA    0E2H
+  00CB                31     P6M1    DATA    0CBH
+  00C8                32     P5      DATA    0C8H
+  00AF                33     EA      BIT     0A8H.7
+  00E1                34     P7M1    DATA    0E1H
+  00E8                35     P6      DATA    0E8H
+  00AA                36     WKTCL   DATA    0AAH
+  00F8                37     P7      DATA    0F8H
+  00CE                38     SPCTL   DATA    0CEH
+  00DF                39     CF      BIT     0D8H.7
+  00F5                40     PWMCR   DATA    0F5H
+  00F9                41     CH      DATA    0F9H
+  00A2                42     P_SW1   DATA    0A2H
+  00BA                43     P_SW2   DATA    0BAH
+  00AD                44     EADC    BIT     0A8H.5
+  00A8                45     IE      DATA    0A8H
+  00E9                46     CL      DATA    0E9H
+  00C5                47     IAP_CMD DATA    0C5H
+  00FA                48     CCAP0H  DATA    0FAH
+  00FB                49     CCAP1H  DATA    0FBH
+  00FC                50     CCAP2H  DATA    0FCH
+  00BD                51     ADC_RES DATA    0BDH
+  00EA                52     CCAP0L  DATA    0EAH
+  00DE                53     CR      BIT     0D8H.6
+  00F7                54     PWMFDCR DATA    0F7H
+  00EB                55     CCAP1L  DATA    0EBH
+  00DA                56     CCAPM0  DATA    0DAH
+  00EC                57     CCAP2L  DATA    0ECH
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE     2
+
+  00DB                58     CCAPM1  DATA    0DBH
+  00DC                59     CCAPM2  DATA    0DCH
+  00AC                60     ES      BIT     0A8H.4
+  00BD                61     PADC    BIT     0B8H.5
+  00B8                62     IP      DATA    0B8H
+  0098                63     RI      BIT     098H.0
+  00D7                64     CY      BIT     0D0H.7
+  0099                65     TI      BIT     098H.1
+  0097                66     CLK_DIV DATA    097H
+  00C3                67     IAP_ADDRH       DATA    0C3H
+  00BC                68     PS      BIT     0B8H.4
+  0081                69     SP      DATA    081H
+  00D9                70     CMOD    DATA    0D9H
+  00D8                71     CCON    DATA    0D8H
+  00C4                72     IAP_ADDRL       DATA    0C4H
+  00BF                73     PPCA    BIT     0B8H.7
+  00D2                74     OV      BIT     0D0H.2
+  00E6                75     CMPCR1  DATA    0E6H
+  00E7                76     CMPCR2  DATA    0E7H
+  00AE                77     ELVD    BIT     0A8H.6
+  0080                78     P00     BIT     080H.0
+  00BC                79     ADC_CONTR       DATA    0BCH
+  0099                80     SBUF    DATA    099H
+  0087                81     PCON    DATA    087H
+  0090                82     P10     BIT     090H.0
+  0081                83     P01     BIT     080H.1
+  00A0                84     P20     BIT     0A0H.0
+  0091                85     P11     BIT     090H.1
+  0082                86     P02     BIT     080H.2
+  00B0                87     P30     BIT     0B0H.0
+  00A1                88     P21     BIT     0A0H.1
+  0092                89     P12     BIT     090H.2
+  0083                90     P03     BIT     080H.3
+  0098                91     SCON    DATA    098H
+  00C0                92     P40     BIT     0C0H.0
+  00B1                93     P31     BIT     0B0H.1
+  00A2                94     P22     BIT     0A0H.2
+  0093                95     P13     BIT     090H.3
+  0084                96     P04     BIT     080H.4
+  0089                97     TMOD    DATA    089H
+  0088                98     TCON    DATA    088H
+  00C8                99     P50     BIT     0C8H.0
+  00C1               100     P41     BIT     0C0H.1
+  00B2               101     P32     BIT     0B0H.2
+  00A3               102     P23     BIT     0A0H.3
+  0094               103     P14     BIT     090H.4
+  0085               104     P05     BIT     080H.5
+  00E8               105     P60     BIT     0E8H.0
+  00C9               106     P51     BIT     0C8H.1
+  00C2               107     P42     BIT     0C0H.2
+  00B3               108     P33     BIT     0B0H.3
+  00A4               109     P24     BIT     0A0H.4
+  0095               110     P15     BIT     090H.5
+  0086               111     P06     BIT     080H.6
+  00BE               112     PLVD    BIT     0B8H.6
+  00F8               113     P70     BIT     0F8H.0
+  00E9               114     P61     BIT     0E8H.1
+  00CA               115     P52     BIT     0C8H.2
+  00C3               116     P43     BIT     0C0H.3
+  00B4               117     P34     BIT     0B0H.4
+  00A5               118     P25     BIT     0A0H.5
+  0096               119     P16     BIT     090H.6
+  0087               120     P07     BIT     080H.7
+  00F9               121     P71     BIT     0F8H.1
+  00EA               122     P62     BIT     0E8H.2
+  00CB               123     P53     BIT     0C8H.3
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE     3
+
+  00C4               124     P44     BIT     0C0H.4
+  00B5               125     P35     BIT     0B0H.5
+  00A6               126     P26     BIT     0A0H.6
+  0097               127     P17     BIT     090H.7
+  00FA               128     P72     BIT     0F8H.2
+  00EB               129     P63     BIT     0E8H.3
+  00CC               130     P54     BIT     0C8H.4
+  00C5               131     P45     BIT     0C0H.5
+  00B6               132     P36     BIT     0B0H.6
+  00A7               133     P27     BIT     0A0H.7
+  00FB               134     P73     BIT     0F8H.3
+  00EC               135     P64     BIT     0E8H.4
+  00CD               136     P55     BIT     0C8H.5
+  00C6               137     P46     BIT     0C0H.6
+  00B7               138     P37     BIT     0B0H.7
+  00FC               139     P74     BIT     0F8H.4
+  00ED               140     P65     BIT     0E8H.5
+  00CE               141     P56     BIT     0C8H.6
+  00C7               142     P47     BIT     0C0H.7
+  00FD               143     P75     BIT     0F8H.5
+  00EE               144     P66     BIT     0E8H.6
+  00CF               145     P57     BIT     0C8H.7
+  00FE               146     P76     BIT     0F8H.6
+  00EF               147     P67     BIT     0E8H.7
+  0089               148     IE0     BIT     088H.1
+  00A1               149     BUS_SPEED       DATA    0A1H
+  00FF               150     P77     BIT     0F8H.7
+  008B               151     IE1     BIT     088H.3
+  00AF               152     IE2     DATA    0AFH
+  008E               153     AUXR    DATA    08EH
+  00F0               154     B       DATA    0F0H
+  00C7               155     IAP_CONTR       DATA    0C7H
+  00F1               156     PWMCFG  DATA    0F1H
+  00E0               157     ACC     DATA    0E0H
+  00A9               158     ET0     BIT     0A8H.1
+  008D               159     TF0     BIT     088H.5
+  00AB               160     ET1     BIT     0A8H.3
+  008F               161     TF1     BIT     088H.7
+  00B5               162     IP2     DATA    0B5H
+  009A               163     RB8     BIT     098H.2
+  008C               164     TH0     DATA    08CH
+  008D               165     TH1     DATA    08DH
+  0088               166     IT0     BIT     088H.0
+  00A8               167     EX0     BIT     0A8H.0
+  009B               168     TB8     BIT     098H.3
+  00D6               169     T2H     DATA    0D6H
+  008A               170     IT1     BIT     088H.2
+  00AA               171     EX1     BIT     0A8H.2
+  00D4               172     T3H     DATA    0D4H
+  00D0               173     P       BIT     0D0H.0
+  009F               174     SM0     BIT     098H.7
+  00D2               175     T4H     DATA    0D2H
+  008A               176     TL0     DATA    08AH
+  009E               177     SM1     BIT     098H.6
+  008B               178     TL1     DATA    08BH
+  009D               179     SM2     BIT     098H.5
+  00D7               180     T2L     DATA    0D7H
+  00D5               181     T3L     DATA    0D5H
+  00D3               182     T4L     DATA    0D3H
+  00B9               183     PT0     BIT     0B8H.1
+  00BB               184     PT1     BIT     0B8H.3
+  00D3               185     RS0     BIT     0D0H.3
+  00C2               186     IAP_DATA        DATA    0C2H
+  008C               187     TR0     BIT     088H.4
+  00D4               188     RS1     BIT     0D0H.4
+  008E               189     TR1     BIT     088H.6
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE     4
+
+  00C1               190     WDT_CONTR       DATA    0C1H
+  00B8               191     PX0     BIT     0B8H.0
+  00BA               192     PX1     BIT     0B8H.2
+  00F2               193     PCA_PWM0        DATA    0F2H
+  00F3               194     PCA_PWM1        DATA    0F3H
+  00F4               195     PCA_PWM2        DATA    0F4H
+  009D               196     P1ASF   DATA    09DH
+  0083               197     DPH     DATA    083H
+  00D1               198     T3T4M   DATA    0D1H
+  00D1               199     T4T3M   DATA    0D1H
+  00BE               200     ADC_RESL        DATA    0BEH
+  0082               201     DPL     DATA    082H
+  00CD               202     SPSTAT  DATA    0CDH
+  009B               203     S2BUF   DATA    09BH
+  00AD               204     S3BUF   DATA    0ADH
+  0085               205     S4BUF   DATA    085H
+  009C               206     REN     BIT     098H.4
+  009A               207     S2CON   DATA    09AH
+  00AC               208     S3CON   DATA    0ACH
+  0084               209     S4CON   DATA    084H
+  00B9               210     SADEN   DATA    0B9H
+  00A9               211     SADDR   DATA    0A9H
+  00C6               212     IAP_TRIG        DATA    0C6H
+  00A2               213     AUXR1   DATA    0A2H
+  00D5               214     F0      BIT     0D0H.5
+  008F               215     INT_CLKO        DATA    08FH
+  00D0               216     PSW     DATA    0D0H
+  00D8               217     CCF0    BIT     0D8H.0
+  00D9               218     CCF1    BIT     0D8H.1
+  00CF               219     SPDAT   DATA    0CFH
+  0094               220     P0M0    DATA    094H
+                     221     ?PR?OS_init?CORE     SEGMENT CODE 
+                     222     ?PR?OS_start?CORE    SEGMENT CODE 
+                     223     ?PR?task_switch?CORE SEGMENT CODE 
+                     224     ?PR?_task_create?CORE                    SEGMENT CODE 
+                     225     ?DT?CORE             SEGMENT DATA 
+                     226     ?DT?_task_create?CORE                    SEGMENT DATA OVERLAYABLE 
+                     227     ?PR?timer1_task_switch?CORE              SEGMENT CODE 
+                     228     ?DT?timer1_task_switch?CORE              SEGMENT DATA OVERLAYABLE 
+                     229     ?PR?sp_test?CORE     SEGMENT CODE 
+                     230     ?C_INITSEG           SEGMENT CODE 
+                     231     ?XD?CORE             SEGMENT XDATA 
+                     232     ?BI?CORE             SEGMENT BIT 
+                     233     ?ID?CORE             SEGMENT IDATA 
+                     234             EXTRN   CODE (?C?LSTKXDATA)
+                     235             EXTRN   CODE (?C?LSTXDATA)
+                     236             PUBLIC  task_sp
+                     237             PUBLIC  task_pcb_buf
+                     238             PUBLIC  task_run_flag
+                     239             PUBLIC  task_start_flag
+                     240             PUBLIC  current_id
+                     241             PUBLIC  task_runtime
+                     242             PUBLIC  sp_test
+                     243             PUBLIC  timer1_task_switch
+                     244             PUBLIC  _task_create
+                     245             PUBLIC  task_switch
+                     246             PUBLIC  OS_start
+                     247             PUBLIC  OS_init
+                     248     
+----                 249             RSEG  ?DT?_task_create?CORE
+0000                 250     ?_task_create?BYTE:
+0000                 251        priority?340:   DS   1
+0001                 252             ORG  1
+0001                 253     task_address?341:   DS   2
+0003                 254             ORG  3
+0003                 255        task_msg?342:   DS   1
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE     5
+
+                     256     
+----                 257             RSEG  ?DT?CORE
+0000                 258               i?343:   DS   1
+                     259     
+----                 260             RSEG  ?DT?CORE
+0001                 261      stack_deep?344:   DS   1
+                     262     
+----                 263             RSEG  ?DT?CORE
+0002                 264         stack_p?345:   DS   1
+                     265     
+----                 266             RSEG  ?DT?timer1_task_switch?CORE
+0000                 267     ?timer1_task_switch?BYTE:
+0000                 268            temp?446:   DS   1
+                     269     
+----                 270             RSEG  ?XD?CORE
+0000                 271        task_runtime:   DS   4
+0004                 272          current_id:   DS   1
+0005                 273       task_run_flag:   DS   4
+0009                 274        task_pcb_buf:   DS   45
+                     275     
+----                 276             RSEG  ?BI?CORE
+0000                 277     task_start_flag:   DBIT   1
+                     278     
+----                 279             RSEG  ?ID?CORE
+0000                 280             task_sp:   DS   100
+                     281     
+----                 282             RSEG  ?C_INITSEG
+0000 41              283             DB      041H
+0001 0000     F      284             DW      current_id
+0003 00              285             DB      000H
+                     286     
+0004 44              287             DB      044H
+0005 0000     F      288             DW      task_run_flag
+0007 00000000        289             DB      000H,000H,000H,000H     ; long
+                     290     
+000B 44              291             DB      044H
+000C 0000     F      292             DW      task_runtime
+000E 00000000        293             DB      000H,000H,000H,000H     ; long
+                     294     
+0012 C100     F      295             DB      0C1H, task_start_flag + 000H    ; bit-init
+                     296     
+0014 01              297             DB      001H
+0015 00       F      298             DB      i?343
+0016 00              299             DB      000H
+                     300     
+0017 01              301             DB      001H
+0018 00       F      302             DB      stack_deep?344
+0019 00              303             DB      000H
+                     304     
+                     305     ; #include "core.h"
+                     306     ; 
+                     307     ; /* ÉêÇëÈÎÎñ¿ØÖÆÄ£¿é½á¹¹ÌåÊ×é£¬´æ´¢ËùÓÐÈÎÎñµÄ¿ØÖÆ½á¹¹Ìå */
+                     308     ; xdata struct task_pcb task_pcb_buf[TASK_MAX];
+                     309     ; /* ÈÎÎñ¶ÑÕ»Ê×é */
+                     310     ; unsigned char idata task_sp[TASK_MAX][SP_DEEP];
+                     311     ; /* ÕÔÚÔËÐÐÈÎÎñµÄid£¬³õÊ¼»¯Îª0£¬Ä¬ÈÏ×î¿ªÊ¼ÔËÐÐ0ºÅÈÎÎñ */
+                     312     ; xdata unsigned char current_id = 0;
+                     313     ; /* ÈÎÎñÔËÐÐ±êÖ¾£¬Öµ·´Ó³ÁËÓÐ¶àÉÙÈÎÎñÕÔÚÔËÐÐ */
+                     314     ; xdata unsigned long task_run_flag = 0;
+                     315     ; /* ´Ó¿ª»úµ½ÏÖÔÚÈÎÎñÔËÐÐÊ±¼ä£¬µ¥Î»10ms */
+                     316     ; xdata unsigned long task_runtime = 0;
+                     317     ; /* ÉèÖÃÏµÍ³ÔËÐÐ±êÖ¾£¬1ÎªÕÔÚÔËÐÐ£¬0ÎªÎ´¿ªÊ¼ÔËÐÐ¡£³õÊ¼»¯Îª0 */
+                     318     ; bit task_start_flag = 0;
+                     319     ; 
+                     320     ; 
+                     321     ; //void pop_ptr(void)
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE     6
+
+                     322     ; //{
+                     323     ; //    #pragma asm
+                     324     ; //            POP 7
+                     325     ; //            POP 6
+                     326     ; //            POP 5
+                     327     ; //            POP 4
+                     328     ; //            POP 3
+                     329     ; //            POP 2
+                     330     ; //            POP 1
+                     331     ; //            POP 0
+                     332     ; //            POP PSW
+                     333     ; //            POP DPH
+                     334     ; //            POP DPL
+                     335     ; //            POP B
+                     336     ; //            POP ACC
+                     337     ; //    #pragma endasm
+                     338     ; //}
+                     339     ; 
+                     340     ; 
+                     341     ; /* ÏµÍ³¿ª»ú³õÊ¼»¯ */
+                     342     ; void OS_init(void)
+                     343     
+----                 344             RSEG  ?PR?OS_init?CORE
+0000                 345     OS_init:
+                     346             USING   0
+                     347                             ; SOURCE LINE # 38
+                     348     ; {
+                     349                             ; SOURCE LINE # 39
+                     350     ;       current_id = 0;                 //µ±Ç°ÔËÐÐÈÎÎñºÅÎª0
+                     351                             ; SOURCE LINE # 40
+0000 900000   F      352             MOV     DPTR,#current_id
+0003 E4              353             CLR     A
+0004 F0              354             MOVX    @DPTR,A
+                     355     ;       task_run_flag = 0;              //µ±Ç°ÎÞÈÎÎñÔËÐÐ
+                     356                             ; SOURCE LINE # 41
+0005 900000   F      357             MOV     DPTR,#task_run_flag
+0008 120000   F      358             LCALL   ?C?LSTKXDATA
+000B 00              359             DB      00H
+000C 00              360             DB      00H
+000D 00              361             DB      00H
+000E 00              362             DB      00H
+                     363     ;       task_runtime = 0;               //µ±Ç°ÔËÐÐÊ±¼äÎª0
+                     364                             ; SOURCE LINE # 42
+000F 900000   F      365             MOV     DPTR,#task_runtime
+0012 120000   F      366             LCALL   ?C?LSTKXDATA
+0015 00              367             DB      00H
+0016 00              368             DB      00H
+0017 00              369             DB      00H
+0018 00              370             DB      00H
+                     371     ;       task_start_flag = 0;    //ÏµÍ³Î´¿ªÊ¼ÔËÐÐ        
+                     372                             ; SOURCE LINE # 43
+0019 C200     F      373             CLR     task_start_flag
+                     374     ; }
+                     375                             ; SOURCE LINE # 44
+001B 22              376             RET     
+                     377     ; END OF OS_init
+                     378     
+                     379     ; 
+                     380     ; /* ÏµÍ³¿ªÊ¼ÈÎÎñµ÷¶È */
+                     381     ; void OS_start(void)
+                     382     
+----                 383             RSEG  ?PR?OS_start?CORE
+0000                 384     OS_start:
+                     385             USING   0
+                     386                             ; SOURCE LINE # 47
+                     387     ; {
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE     7
+
+                     388                             ; SOURCE LINE # 48
+                     389     ;       task_pcb_buf[current_id].sp -= NUM_PTR_NOPC;
+                     390                             ; SOURCE LINE # 49
+0000 900000   F      391             MOV     DPTR,#current_id
+0003 E0              392             MOVX    A,@DPTR
+0004 FF              393             MOV     R7,A
+0005 EF              394             MOV     A,R7
+0006 75F009          395             MOV     B,#09H
+0009 A4              396             MUL     AB
+000A 2400     F      397             ADD     A,#LOW (task_pcb_buf+06H)
+000C F582            398             MOV     DPL,A
+000E E4              399             CLR     A
+000F 3400     F      400             ADDC    A,#HIGH (task_pcb_buf+06H)
+0011 F583            401             MOV     DPH,A
+0013 E0              402             MOVX    A,@DPTR
+0014 24F3            403             ADD     A,#0F3H
+0016 F0              404             MOVX    @DPTR,A
+                     405     ; 
+                     406     ;       SP = task_pcb_buf[current_id].sp;
+                     407                             ; SOURCE LINE # 51
+0017 900000   F      408             MOV     DPTR,#current_id
+001A E0              409             MOVX    A,@DPTR
+001B FF              410             MOV     R7,A
+001C EF              411             MOV     A,R7
+001D 75F009          412             MOV     B,#09H
+0020 A4              413             MUL     AB
+0021 2400     F      414             ADD     A,#LOW (task_pcb_buf+06H)
+0023 F582            415             MOV     DPL,A
+0025 E4              416             CLR     A
+0026 3400     F      417             ADDC    A,#HIGH (task_pcb_buf+06H)
+0028 F583            418             MOV     DPH,A
+002A E0              419             MOVX    A,@DPTR
+002B FF              420             MOV     R7,A
+002C 8F81            421             MOV     SP,R7
+                     422     ;       EA = 1;
+                     423                             ; SOURCE LINE # 52
+002E D2AF            424             SETB    EA
+                     425     ; }
+                     426                             ; SOURCE LINE # 53
+0030 22              427             RET     
+                     428     ; END OF OS_start
+                     429     
+                     430     ; 
+                     431     ; /* ÈÎÎñÇÐ»»£¬ÓÃÔÚ¶¨Ê±Æ÷ÀïÃæ½øÐÐÈÎÎñµÄÇÐ»» */
+                     432     ; void task_switch(void)
+                     433     
+----                 434             RSEG  ?PR?task_switch?CORE
+0000                 435     task_switch:
+                     436             USING   0
+                     437                             ; SOURCE LINE # 56
+                     438     ; {
+                     439                             ; SOURCE LINE # 57
+                     440     ;       EA= 0;  //ÈÎÎñÇÐ»»µÄÊ±ºò²»ÔÊÐí±»ÖÐ¶Ï
+                     441                             ; SOURCE LINE # 58
+0000 C2AF            442             CLR     EA
+                     443     ;       /* ±£´æ¼Ä´æÆ÷Öµ£¬¼Ä´æÆ÷ÖµÈëÕ» */
+                     444     ; //    push_ptr();
+                     445     ;       /* °Ñ×ª»»Ö®Ç°ÈÎÎñµÄÕ»Ö¸Õë±£´æÔÚÊ×éÀïÃæ */
+                     446     ;       task_pcb_buf[current_id].sp = SP;
+                     447                             ; SOURCE LINE # 62
+0002 900000   F      448             MOV     DPTR,#current_id
+0005 E0              449             MOVX    A,@DPTR
+0006 FF              450             MOV     R7,A
+0007 EF              451             MOV     A,R7
+0008 75F009          452             MOV     B,#09H
+000B A4              453             MUL     AB
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE     8
+
+000C 2400     F      454             ADD     A,#LOW (task_pcb_buf+06H)
+000E F582            455             MOV     DPL,A
+0010 E4              456             CLR     A
+0011 3400     F      457             ADDC    A,#HIGH (task_pcb_buf+06H)
+0013 F583            458             MOV     DPH,A
+0015 E581            459             MOV     A,SP
+0017 F0              460             MOVX    @DPTR,A
+                     461     ; //    if(tasks_list
+                     462     ; 
+                     463     ;       /* ¼Ä´æÆ÷Öµ³öÕ»£¬»Ö¸´¼Ä´æÆ÷Öµ */
+                     464     ; //    pop_ptr();
+                     465     ;       EA = 1; //ÈÎÎñÇÐ»»Íê³É£¬ÖØÐÂ¿ªÆôÖÐ¶Ï
+                     466                             ; SOURCE LINE # 67
+0018 D2AF            467             SETB    EA
+                     468     ; }
+                     469                             ; SOURCE LINE # 68
+001A 22              470             RET     
+                     471     ; END OF task_switch
+                     472     
+                     473     ; 
+                     474     ; /* ´´½¨ÈÎÎñ 
+                     475     ;  * priority ÈÎÎñÓÅÏÈ¼¶
+                     476     ;  * task_address ÈÎÎñµØÖ·
+                     477     ;  * task_msg ÈÎÎñÏûÏ¢Ö¸Õë
+                     478     ;  */
+                     479     ; void task_create(unsigned char priority, unsigned int task_address, unsigned char task_ms
+                             g)
+                     480     
+----                 481             RSEG  ?PR?_task_create?CORE
+0000                 482     _task_create:
+                     483             USING   0
+                     484                             ; SOURCE LINE # 75
+0000 8F00     F      485             MOV     priority?340,R7
+0002 8C00     F      486             MOV     task_address?341,R4
+0004 8D00     F      487             MOV     task_address?341+01H,R5
+0006 8B00     F      488             MOV     task_msg?342,R3
+                     489     ; {
+                     490                             ; SOURCE LINE # 76
+                     491     ;       static unsigned char i = 0;
+                     492     ;       static unsigned char stack_deep = 0;
+                     493     ;       static unsigned char stack_p;
+                     494     ; 
+                     495     ;       for(i = 0; i < TASK_MAX; i ++)
+                     496                             ; SOURCE LINE # 81
+0008 750000   F      497             MOV     i?343,#00H
+000B                 498     ?C0004:
+000B E500     F      499             MOV     A,i?343
+000D C3              500             CLR     C
+000E 9405            501             SUBB    A,#05H
+0010 4003            502             JC      $ + 5H
+0012 020000   F      503             LJMP    ?C0012
+                     504     ;       {
+                     505                             ; SOURCE LINE # 82
+                     506     ;               if(task_run_flag & (1 << i))
+                     507                             ; SOURCE LINE # 83
+0015 AF00     F      508             MOV     R7,i?343
+0017 7401            509             MOV     A,#01H
+0019 7E00            510             MOV     R6,#00H
+001B A807            511             MOV     R0,AR7
+001D 08              512             INC     R0
+001E 8005            513             SJMP    ?C0026
+0020                 514     ?C0025:
+0020 C3              515             CLR     C
+0021 33              516             RLC     A
+0022 CE              517             XCH     A,R6
+0023 33              518             RLC     A
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE     9
+
+0024 CE              519             XCH     A,R6
+0025                 520     ?C0026:
+0025 D8F9            521             DJNZ    R0,?C0025
+0027 FF              522             MOV     R7,A
+0028 EE              523             MOV     A,R6
+0029 33              524             RLC     A
+002A 95E0            525             SUBB    A,ACC
+002C FD              526             MOV     R5,A
+002D FC              527             MOV     R4,A
+002E 900000   F      528             MOV     DPTR,#task_run_flag
+0031 E0              529             MOVX    A,@DPTR
+0032 F8              530             MOV     R0,A
+0033 A3              531             INC     DPTR
+0034 E0              532             MOVX    A,@DPTR
+0035 F9              533             MOV     R1,A
+0036 A3              534             INC     DPTR
+0037 E0              535             MOVX    A,@DPTR
+0038 FA              536             MOV     R2,A
+0039 A3              537             INC     DPTR
+003A E0              538             MOVX    A,@DPTR
+003B FB              539             MOV     R3,A
+003C EF              540             MOV     A,R7
+003D 5B              541             ANL     A,R3
+003E FF              542             MOV     R7,A
+003F EE              543             MOV     A,R6
+0040 5A              544             ANL     A,R2
+0041 FE              545             MOV     R6,A
+0042 ED              546             MOV     A,R5
+0043 59              547             ANL     A,R1
+0044 FD              548             MOV     R5,A
+0045 EC              549             MOV     A,R4
+0046 58              550             ANL     A,R0
+0047 FC              551             MOV     R4,A
+0048 EC              552             MOV     A,R4
+0049 4D              553             ORL     A,R5
+004A 4E              554             ORL     A,R6
+004B 4F              555             ORL     A,R7
+004C 6003            556             JZ      $ + 5H
+004E 020000   F      557             LJMP    ?C0006
+0051                 558     ?C0007:
+                     559     ;                       ;
+                     560     ;               else
+                     561     ;               {
+                     562                             ; SOURCE LINE # 86
+                     563     ;                       stack_p = (unsigned char)task_sp[i];    //°Ñ¶ÑÕ»Ö¸ÕëµÄµØÖ·¸³Öµ¶ÑÕ»µ
+                             ØÖ·ÔÝ´æÇø
+                     564                             ; SOURCE LINE # 87
+0051 AF00     F      565             MOV     R7,i?343
+0053 EF              566             MOV     A,R7
+0054 75F014          567             MOV     B,#014H
+0057 A4              568             MUL     AB
+0058 2400     F      569             ADD     A,#LOW (task_sp)
+005A F8              570             MOV     R0,A
+005B AF00            571             MOV     R7,AR0
+005D 8F00     F      572             MOV     stack_p?345,R7
+                     573     ;                       /* ³õÊ¼»¯Çå¿Õ¶ÑÕ»Çø */
+                     574     ;                       for(stack_deep = 0; stack_deep < SP_DEEP; stack_deep ++)
+                     575                             ; SOURCE LINE # 89
+005F 750000   F      576             MOV     stack_deep?344,#00H
+0062                 577     ?C0009:
+0062 E500     F      578             MOV     A,stack_deep?344
+0064 C3              579             CLR     C
+0065 9414            580             SUBB    A,#014H
+0067 500F            581             JNC     ?C0010
+                     582     ;                               ((unsigned char idata *)stack_p)[stack_deep] = 0;
+                     583                             ; SOURCE LINE # 90
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    10
+
+0069 AF00     F      584             MOV     R7,stack_p?345
+006B A807            585             MOV     R0,AR7
+006D AF00     F      586             MOV     R7,stack_deep?344
+006F E8              587             MOV     A,R0
+0070 2F              588             ADD     A,R7
+0071 F8              589             MOV     R0,A
+0072 7600            590             MOV     @R0,#00H
+0074 0500     F      591             INC     stack_deep?344
+0076 80EA            592             SJMP    ?C0009
+0078                 593     ?C0010:
+                     594     ;                       
+                     595     ;                       task_pcb_buf[i].sp = stack_p;   //°Ñ¶ÑÕ»Ö¸Õë¸³Öµ¸øÈÎÎñ½á¹¹Ìå
+                     596                             ; SOURCE LINE # 92
+0078 AF00     F      597             MOV     R7,i?343
+007A EF              598             MOV     A,R7
+007B 75F009          599             MOV     B,#09H
+007E A4              600             MUL     AB
+007F 2400     F      601             ADD     A,#LOW (task_pcb_buf+06H)
+0081 F582            602             MOV     DPL,A
+0083 E4              603             CLR     A
+0084 3400     F      604             ADDC    A,#HIGH (task_pcb_buf+06H)
+0086 F583            605             MOV     DPH,A
+0088 E500     F      606             MOV     A,stack_p?345
+008A F0              607             MOVX    @DPTR,A
+                     608     ;                       ((unsigned char idata *)stack_p)[0] = task_address % 256;         /
+                             /°ÑÈÎÎñµØÖ·µÍ8Î»ÈëÕ»
+                     609                             ; SOURCE LINE # 93
+008B 7E00            610             MOV     R6,#00H
+008D AF00     F      611             MOV     R7,task_address?341+01H
+008F AE00     F      612             MOV     R6,stack_p?345
+0091 A806            613             MOV     R0,AR6
+0093 A607            614             MOV     @R0,AR7
+                     615     ;                       task_pcb_buf[i].sp ++;
+                     616                             ; SOURCE LINE # 94
+0095 AF00     F      617             MOV     R7,i?343
+0097 EF              618             MOV     A,R7
+0098 75F009          619             MOV     B,#09H
+009B A4              620             MUL     AB
+009C 2400     F      621             ADD     A,#LOW (task_pcb_buf+06H)
+009E F582            622             MOV     DPL,A
+00A0 E4              623             CLR     A
+00A1 3400     F      624             ADDC    A,#HIGH (task_pcb_buf+06H)
+00A3 F583            625             MOV     DPH,A
+00A5 E0              626             MOVX    A,@DPTR
+00A6 04              627             INC     A
+00A7 F0              628             MOVX    @DPTR,A
+                     629     ;                       ((unsigned char idata *)stack_p)[1] = task_address >> 8;          /
+                             /°ÑÈÎÎñµØÖ·¸ß8Î»ÈëÕ»
+                     630                             ; SOURCE LINE # 95
+00A8 E500     F      631             MOV     A,task_address?341
+00AA FF              632             MOV     R7,A
+00AB 7E00            633             MOV     R6,#00H
+00AD AE00     F      634             MOV     R6,stack_p?345
+00AF A806            635             MOV     R0,AR6
+00B1 E8              636             MOV     A,R0
+00B2 04              637             INC     A
+00B3 F8              638             MOV     R0,A
+00B4 A607            639             MOV     @R0,AR7
+                     640     ;                       task_pcb_buf[i].sp += NUM_PTR_NOPC;             //½«ÈÎÎñ¶ÑÕ»Ö¸ÕëÖµÉ
+                             èÎªÈÎÎñÇÐ»»Ê±µÄ×´Ì¬
+                     641                             ; SOURCE LINE # 96
+00B6 AF00     F      642             MOV     R7,i?343
+00B8 EF              643             MOV     A,R7
+00B9 75F009          644             MOV     B,#09H
+00BC A4              645             MUL     AB
+00BD 2400     F      646             ADD     A,#LOW (task_pcb_buf+06H)
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    11
+
+00BF F582            647             MOV     DPL,A
+00C1 E4              648             CLR     A
+00C2 3400     F      649             ADDC    A,#HIGH (task_pcb_buf+06H)
+00C4 F583            650             MOV     DPH,A
+00C6 E0              651             MOVX    A,@DPTR
+00C7 240D            652             ADD     A,#0DH
+00C9 F0              653             MOVX    @DPTR,A
+                     654     ;                       
+                     655     ;                       task_run_flag |= (1 << i);              //°Ñ´ËÎ»ÉèÖÃÎªÓÐÈÎÎñ
+                     656                             ; SOURCE LINE # 98
+00CA 900000   F      657             MOV     DPTR,#task_run_flag
+00CD E0              658             MOVX    A,@DPTR
+00CE FC              659             MOV     R4,A
+00CF A3              660             INC     DPTR
+00D0 E0              661             MOVX    A,@DPTR
+00D1 FD              662             MOV     R5,A
+00D2 A3              663             INC     DPTR
+00D3 E0              664             MOVX    A,@DPTR
+00D4 FE              665             MOV     R6,A
+00D5 A3              666             INC     DPTR
+00D6 E0              667             MOVX    A,@DPTR
+00D7 FF              668             MOV     R7,A
+00D8 C004            669             PUSH    AR4
+00DA C005            670             PUSH    AR5
+00DC C006            671             PUSH    AR6
+00DE C007            672             PUSH    AR7
+00E0 AF00     F      673             MOV     R7,i?343
+00E2 7401            674             MOV     A,#01H
+00E4 7E00            675             MOV     R6,#00H
+00E6 A807            676             MOV     R0,AR7
+00E8 08              677             INC     R0
+00E9 8005            678             SJMP    ?C0028
+00EB                 679     ?C0027:
+00EB C3              680             CLR     C
+00EC 33              681             RLC     A
+00ED CE              682             XCH     A,R6
+00EE 33              683             RLC     A
+00EF CE              684             XCH     A,R6
+00F0                 685     ?C0028:
+00F0 D8F9            686             DJNZ    R0,?C0027
+00F2 FF              687             MOV     R7,A
+00F3 AB07            688             MOV     R3,AR7
+00F5 AA06            689             MOV     R2,AR6
+00F7 EA              690             MOV     A,R2
+00F8 33              691             RLC     A
+00F9 95E0            692             SUBB    A,ACC
+00FB F9              693             MOV     R1,A
+00FC F8              694             MOV     R0,A
+00FD D007            695             POP     AR7
+00FF D006            696             POP     AR6
+0101 D005            697             POP     AR5
+0103 D004            698             POP     AR4
+0105 EF              699             MOV     A,R7
+0106 4B              700             ORL     A,R3
+0107 FF              701             MOV     R7,A
+0108 EE              702             MOV     A,R6
+0109 4A              703             ORL     A,R2
+010A FE              704             MOV     R6,A
+010B ED              705             MOV     A,R5
+010C 49              706             ORL     A,R1
+010D FD              707             MOV     R5,A
+010E EC              708             MOV     A,R4
+010F 48              709             ORL     A,R0
+0110 FC              710             MOV     R4,A
+0111 900000   F      711             MOV     DPTR,#task_run_flag
+0114 120000   F      712             LCALL   ?C?LSTXDATA
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    12
+
+0117 22              713             RET     
+                     714     ;                       
+                     715     ;                       return; //ÈÎÎñ´´½¨³É¹¦£¬·µ»Ø
+                     716     ;               }
+                     717                             ; SOURCE LINE # 101
+                     718     ;       }
+                     719                             ; SOURCE LINE # 102
+0118                 720     ?C0006:
+0118 0500     F      721             INC     i?343
+011A 020000   F      722             LJMP    ?C0004
+                     723     ; }
+                     724                             ; SOURCE LINE # 103
+011D                 725     ?C0012:
+011D 22              726             RET     
+                     727     ; END OF _task_create
+                     728     
+----                 729     CSEG    AT      0001BH
+001B 020000   F      730             LJMP    timer1_task_switch
+                     731     
+                     732     ; 
+                     733     ; 
+                     734     ; /* ÖÐ¶Ï·þÎñº¯Ê£¬ÓÃ¶¨Ê±Æ÷1½øÐÐÈÎÎñµ÷¶È */
+                     735     ; void timer1_task_switch(void) interrupt 3
+                     736     
+----                 737             RSEG  ?PR?timer1_task_switch?CORE
+                     738             USING   0
+0000                 739     timer1_task_switch:
+0000 C0E0            740             PUSH    ACC
+0002 C0F0            741             PUSH    B
+0004 C083            742             PUSH    DPH
+0006 C082            743             PUSH    DPL
+0008 C0D0            744             PUSH    PSW
+000A 75D000          745             MOV     PSW,#00H
+000D C000            746             PUSH    AR0
+000F C001            747             PUSH    AR1
+0011 C002            748             PUSH    AR2
+0013 C003            749             PUSH    AR3
+0015 C004            750             PUSH    AR4
+0017 C005            751             PUSH    AR5
+0019 C006            752             PUSH    AR6
+001B C007            753             PUSH    AR7
+                     754             USING   0
+                     755                             ; SOURCE LINE # 107
+                     756     ; {
+                     757     ;       unsigned char temp = 0;
+                     758                             ; SOURCE LINE # 109
+001D 750000   F      759             MOV     temp?446,#00H
+                     760     ;       
+                     761     ;       EA = 0; //ÈÎÎñÇÐ»»µÄÊ±ºòÒª¹Ø±ÕÖÐ¶Ï
+                     762                             ; SOURCE LINE # 111
+0020 C2AF            763             CLR     EA
+                     764     ; 
+                     765     ; //    if(!task_start_flag)    //µÚÒ»´Î½øÈëÖÐ¶Ï
+                     766     ; //    {
+                     767     ; ////          SP = SP - NUM_PTR_NOPC; //´ËÊ±Ö¸ÕëÖ¸Ïòµ÷ÓÃ´ËÖÐ¶ÏÊ±ºòÑ¹ÈëµÄPCµÍµØÖ·
+                     768     ; ////          for(temp = 1; temp < NUM_PTR_NOPC + 1; temp ++)
+                     769     ; ////          {
+                     770     ; ////                  ((unsigned char idata *)SP)[temp] = ((unsigned char idata *)SP)[tem
+                             p + 2];      //½«³ÁËPCÖ®ÍâµÄ¼Ä´æÆ÷ÖµÍùÏÂÆ½ÒÆÁ½Î»
+                     771     ; ////          }
+                     772     ; ////          SP = SP + NUM_PTR_NOPC;
+                     773     ; //            task_start_flag = 1; //ÉèÖÃÏµÍ³ÔËÐÐ±êÖ¾£¬´ËÊ±ÎªÒÑ¾­ÔËÐÐ
+                     774     ; //    }
+                     775     ; 
+                     776     ;       /* ±£´æ¼Ä´æÆ÷Öµ£¬¼Ä´æÆ÷ÖµÈëÕ» */
+                     777     ; //    push_ptr();      /* ÔÚÏÖÓÐ±àÒë»·¾³ÏÂ¼Ä´æÆ÷ÒÑ¾­ÓÉÏµÍ³×Ô¶¯±£´æÁË */
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    13
+
+                     778     ;       
+                     779     ;       TF1 = 0;        //Çå³ÖÐ¶Ï±êÖ¾
+                     780                             ; SOURCE LINE # 127
+0022 C28F            781             CLR     TF1
+                     782     ;       
+                     783     ;       /* °Ñ×ª»»Ö®Ç°ÈÎÎñµÄÕ»Ö¸Õë±£´æÔÚÆäÈÎÎñ½á¹¹ÌåÀïÃæ */
+                     784     ;       task_pcb_buf[current_id].sp = SP;
+                     785                             ; SOURCE LINE # 130
+0024 900000   F      786             MOV     DPTR,#current_id
+0027 E0              787             MOVX    A,@DPTR
+0028 FF              788             MOV     R7,A
+0029 EF              789             MOV     A,R7
+002A 75F009          790             MOV     B,#09H
+002D A4              791             MUL     AB
+002E 2400     F      792             ADD     A,#LOW (task_pcb_buf+06H)
+0030 F582            793             MOV     DPL,A
+0032 E4              794             CLR     A
+0033 3400     F      795             ADDC    A,#HIGH (task_pcb_buf+06H)
+0035 F583            796             MOV     DPH,A
+0037 E581            797             MOV     A,SP
+0039 F0              798             MOVX    @DPTR,A
+                     799     ; 
+                     800     ;       /* µÚÒ»°æ£¬ÈÎÎñÂÖÁ÷±»µ÷ÓÃ£¬²éÕÒ±¾´ÎÈÎÎñÖ®ºóµÄÈÎÎñ£¬ÓÐµÄ»°Ö±½ÓÌøµ½ T2_switch_exit ´¦
+                             Ö´ÐÐ*/
+                     801     ;       for(temp = current_id + 1; temp < TASK_MAX; temp ++)
+                     802                             ; SOURCE LINE # 133
+003A 900000   F      803             MOV     DPTR,#current_id
+003D E0              804             MOVX    A,@DPTR
+003E FF              805             MOV     R7,A
+003F EF              806             MOV     A,R7
+0040 04              807             INC     A
+0041 F500     F      808             MOV     temp?446,A
+0043                 809     ?C0013:
+0043 E500     F      810             MOV     A,temp?446
+0045 C3              811             CLR     C
+0046 9405            812             SUBB    A,#05H
+0048 5045            813             JNC     ?C0014
+                     814     ;       {
+                     815                             ; SOURCE LINE # 134
+                     816     ;               if(task_run_flag & (1 << temp))
+                     817                             ; SOURCE LINE # 135
+004A AF00     F      818             MOV     R7,temp?446
+004C 7401            819             MOV     A,#01H
+004E 7E00            820             MOV     R6,#00H
+0050 A807            821             MOV     R0,AR7
+0052 08              822             INC     R0
+0053 8005            823             SJMP    ?C0030
+0055                 824     ?C0029:
+0055 C3              825             CLR     C
+0056 33              826             RLC     A
+0057 CE              827             XCH     A,R6
+0058 33              828             RLC     A
+0059 CE              829             XCH     A,R6
+005A                 830     ?C0030:
+005A D8F9            831             DJNZ    R0,?C0029
+005C FF              832             MOV     R7,A
+005D EE              833             MOV     A,R6
+005E 33              834             RLC     A
+005F 95E0            835             SUBB    A,ACC
+0061 FD              836             MOV     R5,A
+0062 FC              837             MOV     R4,A
+0063 900000   F      838             MOV     DPTR,#task_run_flag
+0066 E0              839             MOVX    A,@DPTR
+0067 F8              840             MOV     R0,A
+0068 A3              841             INC     DPTR
+0069 E0              842             MOVX    A,@DPTR
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    14
+
+006A F9              843             MOV     R1,A
+006B A3              844             INC     DPTR
+006C E0              845             MOVX    A,@DPTR
+006D FA              846             MOV     R2,A
+006E A3              847             INC     DPTR
+006F E0              848             MOVX    A,@DPTR
+0070 FB              849             MOV     R3,A
+0071 EF              850             MOV     A,R7
+0072 5B              851             ANL     A,R3
+0073 FF              852             MOV     R7,A
+0074 EE              853             MOV     A,R6
+0075 5A              854             ANL     A,R2
+0076 FE              855             MOV     R6,A
+0077 ED              856             MOV     A,R5
+0078 59              857             ANL     A,R1
+0079 FD              858             MOV     R5,A
+007A EC              859             MOV     A,R4
+007B 58              860             ANL     A,R0
+007C FC              861             MOV     R4,A
+007D EC              862             MOV     A,R4
+007E 4D              863             ORL     A,R5
+007F 4E              864             ORL     A,R6
+0080 4F              865             ORL     A,R7
+0081 6008            866             JZ      ?C0015
+                     867     ;               {
+                     868                             ; SOURCE LINE # 136
+                     869     ;                       current_id = temp;
+                     870                             ; SOURCE LINE # 137
+0083 900000   F      871             MOV     DPTR,#current_id
+0086 E500     F      872             MOV     A,temp?446
+0088 F0              873             MOVX    @DPTR,A
+                     874     ;                       goto T2_switch_exit;                    
+                     875                             ; SOURCE LINE # 138
+0089 806C            876             SJMP    ?timer1_task_switch?T2_switch_exit
+                     877     ;               }
+                     878                             ; SOURCE LINE # 139
+                     879     ;       }
+                     880                             ; SOURCE LINE # 140
+008B                 881     ?C0015:
+008B 0500     F      882             INC     temp?446
+008D 80B4            883             SJMP    ?C0013
+008F                 884     ?C0014:
+                     885     ; 
+                     886     ;       /* Ã»ÓÐÕÒµ½ÕÔÚÔËÐÐÈÎÎñÖ®ºóµÄÈÎÎñ£¬·µ»ØÇ°Ãæ½øÐÐ²éÕÒ */
+                     887     ;       for(temp = 0; temp < current_id + 1; temp ++)
+                     888                             ; SOURCE LINE # 143
+008F 750000   F      889             MOV     temp?446,#00H
+0092                 890     ?C0018:
+0092 900000   F      891             MOV     DPTR,#current_id
+0095 E0              892             MOVX    A,@DPTR
+0096 FF              893             MOV     R7,A
+0097 7E00            894             MOV     R6,#00H
+0099 EF              895             MOV     A,R7
+009A 2401            896             ADD     A,#01H
+009C FF              897             MOV     R7,A
+009D EE              898             MOV     A,R6
+009E 3400            899             ADDC    A,#00H
+00A0 FE              900             MOV     R6,A
+00A1 AD00     F      901             MOV     R5,temp?446
+00A3 7C00            902             MOV     R4,#00H
+00A5 C3              903             CLR     C
+00A6 ED              904             MOV     A,R5
+00A7 9F              905             SUBB    A,R7
+00A8 EE              906             MOV     A,R6
+00A9 6480            907             XRL     A,#080H
+00AB F8              908             MOV     R0,A
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    15
+
+00AC EC              909             MOV     A,R4
+00AD 6480            910             XRL     A,#080H
+00AF 98              911             SUBB    A,R0
+00B0 5045            912             JNC     ?timer1_task_switch?T2_switch_exit
+                     913     ;       {
+                     914                             ; SOURCE LINE # 144
+                     915     ;               if(task_run_flag & (1 << temp))
+                     916                             ; SOURCE LINE # 145
+00B2 AF00     F      917             MOV     R7,temp?446
+00B4 7401            918             MOV     A,#01H
+00B6 7E00            919             MOV     R6,#00H
+00B8 A807            920             MOV     R0,AR7
+00BA 08              921             INC     R0
+00BB 8005            922             SJMP    ?C0032
+00BD                 923     ?C0031:
+00BD C3              924             CLR     C
+00BE 33              925             RLC     A
+00BF CE              926             XCH     A,R6
+00C0 33              927             RLC     A
+00C1 CE              928             XCH     A,R6
+00C2                 929     ?C0032:
+00C2 D8F9            930             DJNZ    R0,?C0031
+00C4 FF              931             MOV     R7,A
+00C5 EE              932             MOV     A,R6
+00C6 33              933             RLC     A
+00C7 95E0            934             SUBB    A,ACC
+00C9 FD              935             MOV     R5,A
+00CA FC              936             MOV     R4,A
+00CB 900000   F      937             MOV     DPTR,#task_run_flag
+00CE E0              938             MOVX    A,@DPTR
+00CF F8              939             MOV     R0,A
+00D0 A3              940             INC     DPTR
+00D1 E0              941             MOVX    A,@DPTR
+00D2 F9              942             MOV     R1,A
+00D3 A3              943             INC     DPTR
+00D4 E0              944             MOVX    A,@DPTR
+00D5 FA              945             MOV     R2,A
+00D6 A3              946             INC     DPTR
+00D7 E0              947             MOVX    A,@DPTR
+00D8 FB              948             MOV     R3,A
+00D9 EF              949             MOV     A,R7
+00DA 5B              950             ANL     A,R3
+00DB FF              951             MOV     R7,A
+00DC EE              952             MOV     A,R6
+00DD 5A              953             ANL     A,R2
+00DE FE              954             MOV     R6,A
+00DF ED              955             MOV     A,R5
+00E0 59              956             ANL     A,R1
+00E1 FD              957             MOV     R5,A
+00E2 EC              958             MOV     A,R4
+00E3 58              959             ANL     A,R0
+00E4 FC              960             MOV     R4,A
+00E5 EC              961             MOV     A,R4
+00E6 4D              962             ORL     A,R5
+00E7 4E              963             ORL     A,R6
+00E8 4F              964             ORL     A,R7
+00E9 600C            965             JZ      ?timer1_task_switch?T2_switch_exit
+                     966     ;               {
+                     967                             ; SOURCE LINE # 146
+                     968     ;                       current_id = temp;
+                     969                             ; SOURCE LINE # 147
+00EB 900000   F      970             MOV     DPTR,#current_id
+00EE E500     F      971             MOV     A,temp?446
+00F0 F0              972             MOVX    @DPTR,A
+                     973     ;                       goto T2_switch_exit;    
+                     974                             ; SOURCE LINE # 148
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    16
+
+00F1 8004            975             SJMP    ?timer1_task_switch?T2_switch_exit
+                     976     ;               }
+                     977                             ; SOURCE LINE # 149
+                     978     ;               else
+                     979     ;                       goto T2_switch_exit;
+                     980                             ; SOURCE LINE # 151
+                     981     ;       }
+                     982                             ; SOURCE LINE # 152
+00F3                 983     ?C0020:
+00F3 0500     F      984             INC     temp?446
+00F5 809B            985             SJMP    ?C0018
+                     986     ; 
+                     987     ; T2_switch_exit:
+                     988                             ; SOURCE LINE # 154
+00F7                 989     ?timer1_task_switch?T2_switch_exit:
+                     990     ;       SP = task_pcb_buf[current_id].sp;       //°ÑÒªÔËÐÐµÄÈÎÎñSPµØÖ·´«ÈëSP¼Ä´æÆ÷
+                     991                             ; SOURCE LINE # 155
+00F7 900000   F      992             MOV     DPTR,#current_id
+00FA E0              993             MOVX    A,@DPTR
+00FB FF              994             MOV     R7,A
+00FC EF              995             MOV     A,R7
+00FD 75F009          996             MOV     B,#09H
+0100 A4              997             MUL     AB
+0101 2400     F      998             ADD     A,#LOW (task_pcb_buf+06H)
+0103 F582            999             MOV     DPL,A
+0105 E4             1000             CLR     A
+0106 3400     F     1001             ADDC    A,#HIGH (task_pcb_buf+06H)
+0108 F583           1002             MOV     DPH,A
+010A E0             1003             MOVX    A,@DPTR
+010B FF             1004             MOV     R7,A
+010C 8F81           1005             MOV     SP,R7
+                    1006     ; 
+                    1007     ;       task_runtime ++;        //ÏµÍ³ÔËÐÐÊ±¼ä¼Ó1
+                    1008                             ; SOURCE LINE # 157
+010E 900000   F     1009             MOV     DPTR,#task_runtime
+0111 E0             1010             MOVX    A,@DPTR
+0112 FC             1011             MOV     R4,A
+0113 A3             1012             INC     DPTR
+0114 E0             1013             MOVX    A,@DPTR
+0115 FD             1014             MOV     R5,A
+0116 A3             1015             INC     DPTR
+0117 E0             1016             MOVX    A,@DPTR
+0118 FE             1017             MOV     R6,A
+0119 A3             1018             INC     DPTR
+011A E0             1019             MOVX    A,@DPTR
+011B FF             1020             MOV     R7,A
+011C 7B01           1021             MOV     R3,#01H
+011E 7A00           1022             MOV     R2,#00H
+0120 7900           1023             MOV     R1,#00H
+0122 7800           1024             MOV     R0,#00H
+0124 EF             1025             MOV     A,R7
+0125 2B             1026             ADD     A,R3
+0126 FF             1027             MOV     R7,A
+0127 EE             1028             MOV     A,R6
+0128 3A             1029             ADDC    A,R2
+0129 FE             1030             MOV     R6,A
+012A ED             1031             MOV     A,R5
+012B 39             1032             ADDC    A,R1
+012C FD             1033             MOV     R5,A
+012D EC             1034             MOV     A,R4
+012E 38             1035             ADDC    A,R0
+012F FC             1036             MOV     R4,A
+0130 900000   F     1037             MOV     DPTR,#task_runtime
+0133 120000   F     1038             LCALL   ?C?LSTXDATA
+                    1039     ;       /* ¼Ä´æÆ÷Öµ³öÕ»£¬»Ö¸´¼Ä´æÆ÷Öµ */
+                    1040     ; //    pop_ptr();
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    17
+
+                    1041     ;       EA = 1; //ÈÎÎñÇÐ»»Íê³É£¬ÖØÐÂ¿ªÆôÖÐ¶Ï
+                    1042                             ; SOURCE LINE # 160
+0136 D2AF           1043             SETB    EA
+                    1044     ; }
+                    1045                             ; SOURCE LINE # 161
+0138 D007           1046             POP     AR7
+013A D006           1047             POP     AR6
+013C D005           1048             POP     AR5
+013E D004           1049             POP     AR4
+0140 D003           1050             POP     AR3
+0142 D002           1051             POP     AR2
+0144 D001           1052             POP     AR1
+0146 D000           1053             POP     AR0
+0148 D0D0           1054             POP     PSW
+014A D082           1055             POP     DPL
+014C D083           1056             POP     DPH
+014E D0F0           1057             POP     B
+0150 D0E0           1058             POP     ACC
+0152 32             1059             RETI    
+                    1060     ; END OF timer1_task_switch
+                    1061     
+                    1062     ; 
+                    1063     ; /* ¶ÑÕ»µÄ²âÊÔ */
+                    1064     ; void sp_test(void)
+                    1065     
+----                1066             RSEG  ?PR?sp_test?CORE
+0000                1067     sp_test:
+                    1068             USING   0
+                    1069                             ; SOURCE LINE # 164
+                    1070     ; {
+                    1071                             ; SOURCE LINE # 165
+                    1072     ;       SP = task_sp;
+                    1073                             ; SOURCE LINE # 166
+0000 7B00           1074             MOV     R3,#00H
+0002 7A00     F     1075             MOV     R2,#HIGH (task_sp)
+0004 7900     F     1076             MOV     R1,#LOW (task_sp)
+0006 AF01           1077             MOV     R7,AR1
+0008 8F81           1078             MOV     SP,R7
+                    1079     ; 
+                    1080     ; }
+                    1081                             ; SOURCE LINE # 168
+000A 22             1082             RET     
+                    1083     ; END OF sp_test
+                    1084     
+                    1085             END
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    18
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                             T Y P E  V A L U E   ATTRIBUTES
+
+?BI?CORE . . . . . . . . . . . . .  B SEG    0001H       REL=UNIT
+?C0004 . . . . . . . . . . . . . .  C ADDR   000BH   R   SEG=?PR?_TASK_CREATE?CORE
+?C0006 . . . . . . . . . . . . . .  C ADDR   0118H   R   SEG=?PR?_TASK_CREATE?CORE
+?C0007 . . . . . . . . . . . . . .  C ADDR   0051H   R   SEG=?PR?_TASK_CREATE?CORE
+?C0009 . . . . . . . . . . . . . .  C ADDR   0062H   R   SEG=?PR?_TASK_CREATE?CORE
+?C0010 . . . . . . . . . . . . . .  C ADDR   0078H   R   SEG=?PR?_TASK_CREATE?CORE
+?C0012 . . . . . . . . . . . . . .  C ADDR   011DH   R   SEG=?PR?_TASK_CREATE?CORE
+?C0013 . . . . . . . . . . . . . .  C ADDR   0043H   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?C0014 . . . . . . . . . . . . . .  C ADDR   008FH   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?C0015 . . . . . . . . . . . . . .  C ADDR   008BH   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?C0018 . . . . . . . . . . . . . .  C ADDR   0092H   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?C0020 . . . . . . . . . . . . . .  C ADDR   00F3H   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?C0025 . . . . . . . . . . . . . .  C ADDR   0020H   R   SEG=?PR?_TASK_CREATE?CORE
+?C0026 . . . . . . . . . . . . . .  C ADDR   0025H   R   SEG=?PR?_TASK_CREATE?CORE
+?C0027 . . . . . . . . . . . . . .  C ADDR   00EBH   R   SEG=?PR?_TASK_CREATE?CORE
+?C0028 . . . . . . . . . . . . . .  C ADDR   00F0H   R   SEG=?PR?_TASK_CREATE?CORE
+?C0029 . . . . . . . . . . . . . .  C ADDR   0055H   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?C0030 . . . . . . . . . . . . . .  C ADDR   005AH   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?C0031 . . . . . . . . . . . . . .  C ADDR   00BDH   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?C0032 . . . . . . . . . . . . . .  C ADDR   00C2H   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?C?LSTKXDATA . . . . . . . . . . .  C ADDR   -----       EXT
+?C?LSTXDATA. . . . . . . . . . . .  C ADDR   -----       EXT
+?C_INITSEG . . . . . . . . . . . .  C SEG    001AH       REL=UNIT
+?DT?CORE . . . . . . . . . . . . .  D SEG    0003H       REL=UNIT
+?DT?TIMER1_TASK_SWITCH?CORE. . . .  D SEG    0001H       REL=UNIT
+?DT?_TASK_CREATE?CORE. . . . . . .  D SEG    0004H       REL=UNIT
+?ID?CORE . . . . . . . . . . . . .  I SEG    0064H       REL=UNIT
+?PR?OS_INIT?CORE . . . . . . . . .  C SEG    001CH       REL=UNIT
+?PR?OS_START?CORE. . . . . . . . .  C SEG    0031H       REL=UNIT
+?PR?SP_TEST?CORE . . . . . . . . .  C SEG    000BH       REL=UNIT
+?PR?TASK_SWITCH?CORE . . . . . . .  C SEG    001BH       REL=UNIT
+?PR?TIMER1_TASK_SWITCH?CORE. . . .  C SEG    0153H       REL=UNIT
+?PR?_TASK_CREATE?CORE. . . . . . .  C SEG    011EH       REL=UNIT
+?TIMER1_TASK_SWITCH?BYTE . . . . .  D ADDR   0000H   R   SEG=?DT?TIMER1_TASK_SWITCH?CORE
+?TIMER1_TASK_SWITCH?T2_SWITCH_EXIT  C ADDR   00F7H   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+?XD?CORE . . . . . . . . . . . . .  X SEG    0036H       REL=UNIT
+?_TASK_CREATE?BYTE . . . . . . . .  D ADDR   0000H   R   SEG=?DT?_TASK_CREATE?CORE
+AC . . . . . . . . . . . . . . . .  B ADDR   00D0H.6 A   
+ACC. . . . . . . . . . . . . . . .  D ADDR   00E0H   A   
+ADC_CONTR. . . . . . . . . . . . .  D ADDR   00BCH   A   
+ADC_RES. . . . . . . . . . . . . .  D ADDR   00BDH   A   
+ADC_RESL . . . . . . . . . . . . .  D ADDR   00BEH   A   
+AR0. . . . . . . . . . . . . . . .  D ADDR   0000H   A   
+AR1. . . . . . . . . . . . . . . .  D ADDR   0001H   A   
+AR2. . . . . . . . . . . . . . . .  D ADDR   0002H   A   
+AR3. . . . . . . . . . . . . . . .  D ADDR   0003H   A   
+AR4. . . . . . . . . . . . . . . .  D ADDR   0004H   A   
+AR5. . . . . . . . . . . . . . . .  D ADDR   0005H   A   
+AR6. . . . . . . . . . . . . . . .  D ADDR   0006H   A   
+AR7. . . . . . . . . . . . . . . .  D ADDR   0007H   A   
+AUXR . . . . . . . . . . . . . . .  D ADDR   008EH   A   
+AUXR1. . . . . . . . . . . . . . .  D ADDR   00A2H   A   
+B. . . . . . . . . . . . . . . . .  D ADDR   00F0H   A   
+BUS_SPEED. . . . . . . . . . . . .  D ADDR   00A1H   A   
+CCAP0H . . . . . . . . . . . . . .  D ADDR   00FAH   A   
+CCAP0L . . . . . . . . . . . . . .  D ADDR   00EAH   A   
+CCAP1H . . . . . . . . . . . . . .  D ADDR   00FBH   A   
+CCAP1L . . . . . . . . . . . . . .  D ADDR   00EBH   A   
+CCAP2H . . . . . . . . . . . . . .  D ADDR   00FCH   A   
+CCAP2L . . . . . . . . . . . . . .  D ADDR   00ECH   A   
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    19
+
+CCAPM0 . . . . . . . . . . . . . .  D ADDR   00DAH   A   
+CCAPM1 . . . . . . . . . . . . . .  D ADDR   00DBH   A   
+CCAPM2 . . . . . . . . . . . . . .  D ADDR   00DCH   A   
+CCF0 . . . . . . . . . . . . . . .  B ADDR   00D8H.0 A   
+CCF1 . . . . . . . . . . . . . . .  B ADDR   00D8H.1 A   
+CCF2 . . . . . . . . . . . . . . .  B ADDR   00D8H.2 A   
+CCON . . . . . . . . . . . . . . .  D ADDR   00D8H   A   
+CF . . . . . . . . . . . . . . . .  B ADDR   00D8H.7 A   
+CH . . . . . . . . . . . . . . . .  D ADDR   00F9H   A   
+CL . . . . . . . . . . . . . . . .  D ADDR   00E9H   A   
+CLK_DIV. . . . . . . . . . . . . .  D ADDR   0097H   A   
+CMOD . . . . . . . . . . . . . . .  D ADDR   00D9H   A   
+CMPCR1 . . . . . . . . . . . . . .  D ADDR   00E6H   A   
+CMPCR2 . . . . . . . . . . . . . .  D ADDR   00E7H   A   
+CORE . . . . . . . . . . . . . . .  N NUMB   -----       
+CR . . . . . . . . . . . . . . . .  B ADDR   00D8H.6 A   
+CURRENT_ID . . . . . . . . . . . .  X ADDR   0004H   R   SEG=?XD?CORE
+CY . . . . . . . . . . . . . . . .  B ADDR   00D0H.7 A   
+DPH. . . . . . . . . . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . . . . . . . . . .  D ADDR   0082H   A   
+EA . . . . . . . . . . . . . . . .  B ADDR   00A8H.7 A   
+EADC . . . . . . . . . . . . . . .  B ADDR   00A8H.5 A   
+ELVD . . . . . . . . . . . . . . .  B ADDR   00A8H.6 A   
+ES . . . . . . . . . . . . . . . .  B ADDR   00A8H.4 A   
+ET0. . . . . . . . . . . . . . . .  B ADDR   00A8H.1 A   
+ET1. . . . . . . . . . . . . . . .  B ADDR   00A8H.3 A   
+EX0. . . . . . . . . . . . . . . .  B ADDR   00A8H.0 A   
+EX1. . . . . . . . . . . . . . . .  B ADDR   00A8H.2 A   
+F0 . . . . . . . . . . . . . . . .  B ADDR   00D0H.5 A   
+I?343. . . . . . . . . . . . . . .  D ADDR   0000H   R   SEG=?DT?CORE
+IAP_ADDRH. . . . . . . . . . . . .  D ADDR   00C3H   A   
+IAP_ADDRL. . . . . . . . . . . . .  D ADDR   00C4H   A   
+IAP_CMD. . . . . . . . . . . . . .  D ADDR   00C5H   A   
+IAP_CONTR. . . . . . . . . . . . .  D ADDR   00C7H   A   
+IAP_DATA . . . . . . . . . . . . .  D ADDR   00C2H   A   
+IAP_TRIG . . . . . . . . . . . . .  D ADDR   00C6H   A   
+IE . . . . . . . . . . . . . . . .  D ADDR   00A8H   A   
+IE0. . . . . . . . . . . . . . . .  B ADDR   0088H.1 A   
+IE1. . . . . . . . . . . . . . . .  B ADDR   0088H.3 A   
+IE2. . . . . . . . . . . . . . . .  D ADDR   00AFH   A   
+INT_CLKO . . . . . . . . . . . . .  D ADDR   008FH   A   
+IP . . . . . . . . . . . . . . . .  D ADDR   00B8H   A   
+IP2. . . . . . . . . . . . . . . .  D ADDR   00B5H   A   
+IT0. . . . . . . . . . . . . . . .  B ADDR   0088H.0 A   
+IT1. . . . . . . . . . . . . . . .  B ADDR   0088H.2 A   
+OS_INIT. . . . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?OS_INIT?CORE
+OS_START . . . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?OS_START?CORE
+OV . . . . . . . . . . . . . . . .  B ADDR   00D0H.2 A   
+P. . . . . . . . . . . . . . . . .  B ADDR   00D0H.0 A   
+P0 . . . . . . . . . . . . . . . .  D ADDR   0080H   A   
+P00. . . . . . . . . . . . . . . .  B ADDR   0080H.0 A   
+P01. . . . . . . . . . . . . . . .  B ADDR   0080H.1 A   
+P02. . . . . . . . . . . . . . . .  B ADDR   0080H.2 A   
+P03. . . . . . . . . . . . . . . .  B ADDR   0080H.3 A   
+P04. . . . . . . . . . . . . . . .  B ADDR   0080H.4 A   
+P05. . . . . . . . . . . . . . . .  B ADDR   0080H.5 A   
+P06. . . . . . . . . . . . . . . .  B ADDR   0080H.6 A   
+P07. . . . . . . . . . . . . . . .  B ADDR   0080H.7 A   
+P0M0 . . . . . . . . . . . . . . .  D ADDR   0094H   A   
+P0M1 . . . . . . . . . . . . . . .  D ADDR   0093H   A   
+P1 . . . . . . . . . . . . . . . .  D ADDR   0090H   A   
+P10. . . . . . . . . . . . . . . .  B ADDR   0090H.0 A   
+P11. . . . . . . . . . . . . . . .  B ADDR   0090H.1 A   
+P12. . . . . . . . . . . . . . . .  B ADDR   0090H.2 A   
+P13. . . . . . . . . . . . . . . .  B ADDR   0090H.3 A   
+P14. . . . . . . . . . . . . . . .  B ADDR   0090H.4 A   
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    20
+
+P15. . . . . . . . . . . . . . . .  B ADDR   0090H.5 A   
+P16. . . . . . . . . . . . . . . .  B ADDR   0090H.6 A   
+P17. . . . . . . . . . . . . . . .  B ADDR   0090H.7 A   
+P1ASF. . . . . . . . . . . . . . .  D ADDR   009DH   A   
+P1M0 . . . . . . . . . . . . . . .  D ADDR   0092H   A   
+P1M1 . . . . . . . . . . . . . . .  D ADDR   0091H   A   
+P2 . . . . . . . . . . . . . . . .  D ADDR   00A0H   A   
+P20. . . . . . . . . . . . . . . .  B ADDR   00A0H.0 A   
+P21. . . . . . . . . . . . . . . .  B ADDR   00A0H.1 A   
+P22. . . . . . . . . . . . . . . .  B ADDR   00A0H.2 A   
+P23. . . . . . . . . . . . . . . .  B ADDR   00A0H.3 A   
+P24. . . . . . . . . . . . . . . .  B ADDR   00A0H.4 A   
+P25. . . . . . . . . . . . . . . .  B ADDR   00A0H.5 A   
+P26. . . . . . . . . . . . . . . .  B ADDR   00A0H.6 A   
+P27. . . . . . . . . . . . . . . .  B ADDR   00A0H.7 A   
+P2M0 . . . . . . . . . . . . . . .  D ADDR   0096H   A   
+P2M1 . . . . . . . . . . . . . . .  D ADDR   0095H   A   
+P3 . . . . . . . . . . . . . . . .  D ADDR   00B0H   A   
+P30. . . . . . . . . . . . . . . .  B ADDR   00B0H.0 A   
+P31. . . . . . . . . . . . . . . .  B ADDR   00B0H.1 A   
+P32. . . . . . . . . . . . . . . .  B ADDR   00B0H.2 A   
+P33. . . . . . . . . . . . . . . .  B ADDR   00B0H.3 A   
+P34. . . . . . . . . . . . . . . .  B ADDR   00B0H.4 A   
+P35. . . . . . . . . . . . . . . .  B ADDR   00B0H.5 A   
+P36. . . . . . . . . . . . . . . .  B ADDR   00B0H.6 A   
+P37. . . . . . . . . . . . . . . .  B ADDR   00B0H.7 A   
+P3M0 . . . . . . . . . . . . . . .  D ADDR   00B2H   A   
+P3M1 . . . . . . . . . . . . . . .  D ADDR   00B1H   A   
+P4 . . . . . . . . . . . . . . . .  D ADDR   00C0H   A   
+P40. . . . . . . . . . . . . . . .  B ADDR   00C0H.0 A   
+P41. . . . . . . . . . . . . . . .  B ADDR   00C0H.1 A   
+P42. . . . . . . . . . . . . . . .  B ADDR   00C0H.2 A   
+P43. . . . . . . . . . . . . . . .  B ADDR   00C0H.3 A   
+P44. . . . . . . . . . . . . . . .  B ADDR   00C0H.4 A   
+P45. . . . . . . . . . . . . . . .  B ADDR   00C0H.5 A   
+P46. . . . . . . . . . . . . . . .  B ADDR   00C0H.6 A   
+P47. . . . . . . . . . . . . . . .  B ADDR   00C0H.7 A   
+P4M0 . . . . . . . . . . . . . . .  D ADDR   00B4H   A   
+P4M1 . . . . . . . . . . . . . . .  D ADDR   00B3H   A   
+P5 . . . . . . . . . . . . . . . .  D ADDR   00C8H   A   
+P50. . . . . . . . . . . . . . . .  B ADDR   00C8H.0 A   
+P51. . . . . . . . . . . . . . . .  B ADDR   00C8H.1 A   
+P52. . . . . . . . . . . . . . . .  B ADDR   00C8H.2 A   
+P53. . . . . . . . . . . . . . . .  B ADDR   00C8H.3 A   
+P54. . . . . . . . . . . . . . . .  B ADDR   00C8H.4 A   
+P55. . . . . . . . . . . . . . . .  B ADDR   00C8H.5 A   
+P56. . . . . . . . . . . . . . . .  B ADDR   00C8H.6 A   
+P57. . . . . . . . . . . . . . . .  B ADDR   00C8H.7 A   
+P5M0 . . . . . . . . . . . . . . .  D ADDR   00CAH   A   
+P5M1 . . . . . . . . . . . . . . .  D ADDR   00C9H   A   
+P6 . . . . . . . . . . . . . . . .  D ADDR   00E8H   A   
+P60. . . . . . . . . . . . . . . .  B ADDR   00E8H.0 A   
+P61. . . . . . . . . . . . . . . .  B ADDR   00E8H.1 A   
+P62. . . . . . . . . . . . . . . .  B ADDR   00E8H.2 A   
+P63. . . . . . . . . . . . . . . .  B ADDR   00E8H.3 A   
+P64. . . . . . . . . . . . . . . .  B ADDR   00E8H.4 A   
+P65. . . . . . . . . . . . . . . .  B ADDR   00E8H.5 A   
+P66. . . . . . . . . . . . . . . .  B ADDR   00E8H.6 A   
+P67. . . . . . . . . . . . . . . .  B ADDR   00E8H.7 A   
+P6M0 . . . . . . . . . . . . . . .  D ADDR   00CCH   A   
+P6M1 . . . . . . . . . . . . . . .  D ADDR   00CBH   A   
+P7 . . . . . . . . . . . . . . . .  D ADDR   00F8H   A   
+P70. . . . . . . . . . . . . . . .  B ADDR   00F8H.0 A   
+P71. . . . . . . . . . . . . . . .  B ADDR   00F8H.1 A   
+P72. . . . . . . . . . . . . . . .  B ADDR   00F8H.2 A   
+P73. . . . . . . . . . . . . . . .  B ADDR   00F8H.3 A   
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    21
+
+P74. . . . . . . . . . . . . . . .  B ADDR   00F8H.4 A   
+P75. . . . . . . . . . . . . . . .  B ADDR   00F8H.5 A   
+P76. . . . . . . . . . . . . . . .  B ADDR   00F8H.6 A   
+P77. . . . . . . . . . . . . . . .  B ADDR   00F8H.7 A   
+P7M0 . . . . . . . . . . . . . . .  D ADDR   00E2H   A   
+P7M1 . . . . . . . . . . . . . . .  D ADDR   00E1H   A   
+PADC . . . . . . . . . . . . . . .  B ADDR   00B8H.5 A   
+PCA_PWM0 . . . . . . . . . . . . .  D ADDR   00F2H   A   
+PCA_PWM1 . . . . . . . . . . . . .  D ADDR   00F3H   A   
+PCA_PWM2 . . . . . . . . . . . . .  D ADDR   00F4H   A   
+PCON . . . . . . . . . . . . . . .  D ADDR   0087H   A   
+PLVD . . . . . . . . . . . . . . .  B ADDR   00B8H.6 A   
+PPCA . . . . . . . . . . . . . . .  B ADDR   00B8H.7 A   
+PRIORITY?340 . . . . . . . . . . .  D ADDR   0000H   R   SEG=?DT?_TASK_CREATE?CORE
+PS . . . . . . . . . . . . . . . .  B ADDR   00B8H.4 A   
+PSW. . . . . . . . . . . . . . . .  D ADDR   00D0H   A   
+PT0. . . . . . . . . . . . . . . .  B ADDR   00B8H.1 A   
+PT1. . . . . . . . . . . . . . . .  B ADDR   00B8H.3 A   
+PWMCFG . . . . . . . . . . . . . .  D ADDR   00F1H   A   
+PWMCR. . . . . . . . . . . . . . .  D ADDR   00F5H   A   
+PWMFDCR. . . . . . . . . . . . . .  D ADDR   00F7H   A   
+PWMIF. . . . . . . . . . . . . . .  D ADDR   00F6H   A   
+PX0. . . . . . . . . . . . . . . .  B ADDR   00B8H.0 A   
+PX1. . . . . . . . . . . . . . . .  B ADDR   00B8H.2 A   
+P_SW1. . . . . . . . . . . . . . .  D ADDR   00A2H   A   
+P_SW2. . . . . . . . . . . . . . .  D ADDR   00BAH   A   
+RB8. . . . . . . . . . . . . . . .  B ADDR   0098H.2 A   
+REN. . . . . . . . . . . . . . . .  B ADDR   0098H.4 A   
+RI . . . . . . . . . . . . . . . .  B ADDR   0098H.0 A   
+RS0. . . . . . . . . . . . . . . .  B ADDR   00D0H.3 A   
+RS1. . . . . . . . . . . . . . . .  B ADDR   00D0H.4 A   
+S2BUF. . . . . . . . . . . . . . .  D ADDR   009BH   A   
+S2CON. . . . . . . . . . . . . . .  D ADDR   009AH   A   
+S3BUF. . . . . . . . . . . . . . .  D ADDR   00ADH   A   
+S3CON. . . . . . . . . . . . . . .  D ADDR   00ACH   A   
+S4BUF. . . . . . . . . . . . . . .  D ADDR   0085H   A   
+S4CON. . . . . . . . . . . . . . .  D ADDR   0084H   A   
+SADDR. . . . . . . . . . . . . . .  D ADDR   00A9H   A   
+SADEN. . . . . . . . . . . . . . .  D ADDR   00B9H   A   
+SBUF . . . . . . . . . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . . . . . . . . . .  D ADDR   0098H   A   
+SM0. . . . . . . . . . . . . . . .  B ADDR   0098H.7 A   
+SM1. . . . . . . . . . . . . . . .  B ADDR   0098H.6 A   
+SM2. . . . . . . . . . . . . . . .  B ADDR   0098H.5 A   
+SP . . . . . . . . . . . . . . . .  D ADDR   0081H   A   
+SPCTL. . . . . . . . . . . . . . .  D ADDR   00CEH   A   
+SPDAT. . . . . . . . . . . . . . .  D ADDR   00CFH   A   
+SPSTAT . . . . . . . . . . . . . .  D ADDR   00CDH   A   
+SP_TEST. . . . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?SP_TEST?CORE
+STACK_DEEP?344 . . . . . . . . . .  D ADDR   0001H   R   SEG=?DT?CORE
+STACK_P?345. . . . . . . . . . . .  D ADDR   0002H   R   SEG=?DT?CORE
+T2H. . . . . . . . . . . . . . . .  D ADDR   00D6H   A   
+T2L. . . . . . . . . . . . . . . .  D ADDR   00D7H   A   
+T3H. . . . . . . . . . . . . . . .  D ADDR   00D4H   A   
+T3L. . . . . . . . . . . . . . . .  D ADDR   00D5H   A   
+T3T4M. . . . . . . . . . . . . . .  D ADDR   00D1H   A   
+T4H. . . . . . . . . . . . . . . .  D ADDR   00D2H   A   
+T4L. . . . . . . . . . . . . . . .  D ADDR   00D3H   A   
+T4T3M. . . . . . . . . . . . . . .  D ADDR   00D1H   A   
+TASK_ADDRESS?341 . . . . . . . . .  D ADDR   0001H   R   SEG=?DT?_TASK_CREATE?CORE
+TASK_MSG?342 . . . . . . . . . . .  D ADDR   0003H   R   SEG=?DT?_TASK_CREATE?CORE
+TASK_PCB_BUF . . . . . . . . . . .  X ADDR   0009H   R   SEG=?XD?CORE
+TASK_RUNTIME . . . . . . . . . . .  X ADDR   0000H   R   SEG=?XD?CORE
+TASK_RUN_FLAG. . . . . . . . . . .  X ADDR   0005H   R   SEG=?XD?CORE
+TASK_SP. . . . . . . . . . . . . .  I ADDR   0000H   R   SEG=?ID?CORE
+TASK_START_FLAG. . . . . . . . . .  B ADDR   0000H.0 R   SEG=?BI?CORE
+A51 MACRO ASSEMBLER  CORE                                                                 03/06/2016 10:14:01 PAGE    22
+
+TASK_SWITCH. . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?TASK_SWITCH?CORE
+TB8. . . . . . . . . . . . . . . .  B ADDR   0098H.3 A   
+TCON . . . . . . . . . . . . . . .  D ADDR   0088H   A   
+TEMP?446 . . . . . . . . . . . . .  D ADDR   0000H   R   SEG=?DT?TIMER1_TASK_SWITCH?CORE
+TF0. . . . . . . . . . . . . . . .  B ADDR   0088H.5 A   
+TF1. . . . . . . . . . . . . . . .  B ADDR   0088H.7 A   
+TH0. . . . . . . . . . . . . . . .  D ADDR   008CH   A   
+TH1. . . . . . . . . . . . . . . .  D ADDR   008DH   A   
+TI . . . . . . . . . . . . . . . .  B ADDR   0098H.1 A   
+TIMER1_TASK_SWITCH . . . . . . . .  C ADDR   0000H   R   SEG=?PR?TIMER1_TASK_SWITCH?CORE
+TL0. . . . . . . . . . . . . . . .  D ADDR   008AH   A   
+TL1. . . . . . . . . . . . . . . .  D ADDR   008BH   A   
+TMOD . . . . . . . . . . . . . . .  D ADDR   0089H   A   
+TR0. . . . . . . . . . . . . . . .  B ADDR   0088H.4 A   
+TR1. . . . . . . . . . . . . . . .  B ADDR   0088H.6 A   
+WDT_CONTR. . . . . . . . . . . . .  D ADDR   00C1H   A   
+WKTCH. . . . . . . . . . . . . . .  D ADDR   00ABH   A   
+WKTCL. . . . . . . . . . . . . . .  D ADDR   00AAH   A   
+_TASK_CREATE . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_TASK_CREATE?CORE
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

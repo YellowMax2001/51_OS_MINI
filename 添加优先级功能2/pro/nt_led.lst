@@ -1,0 +1,87 @@
+C51 COMPILER V9.02   NT_LED                                                                03/07/2016 13:53:11 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE NT_LED
+OBJECT MODULE PLACED IN .\nt_led.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\nt_led.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head) DEBUG 
+                    -OBJECTEXTEND PRINT(.\nt_led.lst) OBJECT(.\nt_led.obj)
+
+line level    source
+
+   1          #include <nt_led.h>
+   2          
+   3          uchar duan[] = {0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};
+   4          uchar wei[]  = {0xF0,0xF1,0xF2,0xF3,0xF4,0xF5};
+   5          
+   6          uchar dula_yin[] = {0x3f,0x06,0x5b,0x4f, 0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c, 0x39,0x5e,0x79,0x71};
+   7          uchar wela_yin[] = {0xFE,0xFD,0xFB,0xF7}; 
+   8          
+   9          /*****************************************
+  10           *数码管显示函数 
+  11           *例:nt_disp(32,num_check,num_div) 显示32 
+  12           *****************************************/
+  13          void nt_disp(uint num,uint num_check,uchar num_div[])
+  14          {
+  15   1              if(num - num_check)
+  16   1              {
+  17   2                      num_div[0] = num / 100000;
+  18   2                      num_div[1] = num % 100000 / 10000;
+  19   2                      num_div[2] = num % 10000  / 1000;
+  20   2                      num_div[3] = num % 1000   / 100;
+  21   2                      num_div[4] = num % 100    / 10;
+  22   2                      num_div[5] = num % 10;
+  23   2      
+  24   2                      num_check = num;
+  25   2              }
+  26   1      
+  27   1               P0 = duan[num_div[0]]; P2 |= 0x07; P2 &= wei[0];       delay_ms(1);
+  28   1               P0 = duan[num_div[1]]; P2 |= 0x07; P2 &= wei[1];       delay_ms(1);
+  29   1               P0 = duan[num_div[2]]; P2 |= 0x07; P2 &= wei[2];       delay_ms(1);
+  30   1               P0 = duan[num_div[3]]; P2 |= 0x07; P2 &= wei[3];       delay_ms(1);
+  31   1               P0 = duan[num_div[4]]; P2 |= 0x07; P2 &= wei[4];       delay_ms(1);
+  32   1               P0 = duan[num_div[5]]; P2 |= 0x07; P2 &= wei[5];       delay_ms(1);
+  33   1      }
+  34          
+  35          /*****************************************
+  36           *数码管显示函数，用于中断函数内部 
+  37           *例:nt_disp(32, cont) 显示32 
+  38           *****************************************/
+  39          void nt_disp_vector(uint32 num, uchar cont)
+  40          {
+  41   1              uchar num_div[6];
+  42   1              
+  43   1              num_div[0] = num / 100000;
+  44   1              num_div[1] = num % 100000 / 10000;
+  45   1              num_div[2] = num % 10000  / 1000;
+  46   1              num_div[3] = num % 1000   / 100;
+  47   1              num_div[4] = num % 100    / 10;
+  48   1              num_div[5] = num % 10;
+  49   1      
+  50   1              switch(cont)
+  51   1              {
+  52   2                      case 0: {P2 = wei[0]; P0 = duan[num_div[0]]; break;}
+  53   2                      case 1: {P2 = wei[1]; P0 = duan[num_div[1]]; break;}
+  54   2                      case 2: {P2 = wei[2]; P0 = duan[num_div[2]]; break;}
+C51 COMPILER V9.02   NT_LED                                                                03/07/2016 13:53:11 PAGE 2   
+
+  55   2                      case 3: {P2 = wei[3]; P0 = duan[num_div[3]]; break;}
+  56   2                      case 4: {P2 = wei[4]; P0 = duan[num_div[4]]; break;}
+  57   2                      case 5: {P2 = wei[5]; P0 = duan[num_div[5]]; break;}    
+  58   2      
+  59   2                      default: break;
+  60   2              }
+  61   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    820    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     36      18
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

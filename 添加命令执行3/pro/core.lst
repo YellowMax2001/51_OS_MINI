@@ -1,0 +1,278 @@
+C51 COMPILER V9.02   CORE                                                                  03/10/2016 13:23:19 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE CORE
+OBJECT MODULE PLACED IN .\core.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\core.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head) DEBUG OB
+                    -JECTEXTEND PRINT(.\core.lst) OBJECT(.\core.obj)
+
+line level    source
+
+   1          #include "core.h"
+   2          
+   3          /* 申请任务控制模块结构体数组，存储所有任务的控制结构体 */
+   4          xdata struct task_pcb task_pcb_buf[TASK_MAX];
+   5          /* 任务堆栈数组 */
+   6          volatile unsigned char idata task_sp[TASK_MAX][SP_DEEP];
+   7          /* 正在运行任务的id，初始化为0，默认最开始运行0号任务 */
+   8          xdata unsigned char current_id = 0;
+   9          /* 任务运行标志，值反映了有多少任务正在运行 */
+  10          xdata unsigned long task_run_flag = 0;
+  11          /* 统计进入临界栈的次数 */
+  12          xdata unsigned int critical_counter = 0;
+  13          /* 从开机到现在任务运行时间，单位10ms */
+  14          xdata unsigned long task_runtime = 0;
+  15          /* 串口接收数据缓冲区，长度为256个字节 */
+  16          xdata unsigned char reve_buff[256];
+  17          /* 设置系统运行标志，1为正在运行，0为未开始运行。初始化为0 */
+  18          bit task_start_flag = 0;
+  19          
+  20          //void pop_ptr(void)
+  21          //{
+  22          //      #pragma asm
+  23          //              POP 7
+  24          //              POP 6
+  25          //              POP 5
+  26          //              POP 4
+  27          //              POP 3
+  28          //              POP 2
+  29          //              POP 1
+  30          //              POP 0
+  31          //              POP PSW
+  32          //              POP DPH
+  33          //              POP DPL
+  34          //              POP B
+  35          //              POP ACC
+  36          //      #pragma endasm
+  37          //}
+  38          
+  39          /* 系统延时,单位ms */
+  40          void OS_delay(unsigned int ms)
+  41          {
+  42   1              ms = ms / 10;   
+  43   1              task_delay(ms);
+  44   1      
+  45   1              while(task_pcb_buf[current_id].delay);
+  46   1      }
+  47          
+  48          /* 系统开机初始化 */
+  49          void OS_init(void)
+  50          {
+  51   1              current_id = 0;                 //当前运行任务号为0
+  52   1              task_run_flag = 0;              //当前无任务运行
+  53   1              task_runtime = 0;               //当前运行时间为0
+  54   1              task_start_flag = 0;    //系统未开始运行        
+C51 COMPILER V9.02   CORE                                                                  03/10/2016 13:23:19 PAGE 2   
+
+  55   1      }
+  56          
+  57          /* 系统开始任务调度 */
+  58          void OS_start(void)
+  59          {
+  60   1              task_pcb_buf[current_id].sp -= NUM_PTR_NOPC;
+  61   1      
+  62   1              SP = task_pcb_buf[current_id].sp;
+  63   1              TR1 = 1;                                                                                  //开始计时
+  64   1              ET1 = 1;                                                                                  //使能定时器1
+  65   1              EA  = 1;                                                                                  //开全局中断
+  66   1      }
+  67          
+  68          /* 任务切换，用在定时器里面进行任务的切换 */
+  69          void task_switch(void)
+  70          {
+  71   1              EA= 0;  //任务切换的时候不允许被中断
+  72   1              /* 保存寄存器值，寄存器值入栈 */
+  73   1      //      push_ptr();
+  74   1              /* 把转换之前任务的栈指针保存在数组里面 */
+  75   1              task_pcb_buf[current_id].sp = SP;
+  76   1      //      if(tasks_list
+  77   1      
+  78   1              /* 寄存器值出栈，恢复寄存器值 */
+  79   1      //      pop_ptr();
+  80   1              EA = 1; //任务切换完成，重新开启中断
+  81   1      }
+  82          
+  83          /* 创建任务 
+  84           * priority 任务优先级
+  85           * task_address 任务地址
+  86           * task_msg 任务消息指针
+  87           */
+  88          unsigned char task_create(unsigned char priority, unsigned int task_address, unsigned char xdata *task_msg
+             -)
+  89          {
+  90   1              static unsigned char i = 0;
+  91   1              static unsigned char stack_deep = 0;
+  92   1              static unsigned char stack_p;
+  93   1      
+  94   1              ENTER_CRITICAL; //动态创建任务的时候不允许被中断，此时应该进入临界栈
+  95   1      
+  96   1              for(i = 0; i < TASK_MAX; i ++)
+  97   1              {
+  98   2                      if(task_run_flag & (1 << i))
+  99   2                              ;
+ 100   2                      else
+ 101   2                      {
+ 102   3                              stack_p = (unsigned char)task_sp[i];    //把堆栈指针的地址赋值堆栈地址暂存区
+ 103   3                              /* 初始化清空堆栈区 */
+ 104   3                              for(stack_deep = 0; stack_deep < SP_DEEP; stack_deep ++)
+ 105   3                                      ((unsigned char idata *)stack_p)[stack_deep] = 0;
+ 106   3                              
+ 107   3                              task_pcb_buf[i].sp = stack_p;   //把堆栈指针赋值给任务结构体
+ 108   3                              ((unsigned char idata *)stack_p)[0] = task_address % 256;         //把任务地址低8位入栈
+ 109   3                              task_pcb_buf[i].sp ++;
+ 110   3                              ((unsigned char idata *)stack_p)[1] = task_address >> 8;          //把任务地址高8位入栈
+ 111   3                              
+ 112   3                              task_pcb_buf[i].sp += NUM_PTR_NOPC;             //将任务堆栈指针值设为任务切换时的状态
+ 113   3                              task_pcb_buf[i].priority = priority;    //设置任务的优先级
+ 114   3                              task_pcb_buf[i].msg              = task_msg;    //设置任务的消息指针
+ 115   3                              
+C51 COMPILER V9.02   CORE                                                                  03/10/2016 13:23:19 PAGE 3   
+
+ 116   3                              task_run_flag |= (1 << i);              //把此位设置为有任务
+ 117   3                              
+ 118   3                              EXIT_CRITICAL;  //任务创建完毕，退出临界栈
+ 119   3      
+ 120   3                              return 0;       //任务创建成功，返回
+ 121   3                      }
+ 122   2              }
+ 123   1      
+ 124   1              EXIT_CRITICAL;          //任务创建失败，也要退出临界栈
+ 125   1              return 1;                       //资源不足，无法继续创建任务，返回1
+ 126   1      }
+ 127          
+ 128          
+ 129          /* 中断服务函数，用定时器1进行任务调度 */
+ 130          void timer1_task_switch(void) interrupt 3
+ 131          {
+ 132   1              unsigned char temp = 0;
+ 133   1              
+ 134   1              EA = 0; //任务切换的时候要关闭中断
+ 135   1      
+ 136   1      //      if(!task_start_flag)    //第一次进入中断
+ 137   1      //      {
+ 138   1      //              SP = SP - NUM_PTR_NOPC; //此时指针指向调用此中断时候压入的PC低地址
+ 139   1      //              for(temp = 1; temp < NUM_PTR_NOPC + 1; temp ++)
+ 140   1      //              {
+ 141   1      //                      ((unsigned char idata *)SP)[temp] = ((unsigned char idata *)SP)[temp + 2];      //将除了PC之外的寄存器值往
+             -下平移两位
+ 142   1      //              }
+ 143   1      //              SP = SP + NUM_PTR_NOPC;
+ 144   1      //              task_start_flag = 1; //设置系统运行标志，此时为已经运行
+ 145   1      //      }
+ 146   1      
+ 147   1              /* 保存寄存器值，寄存器值入栈 */
+ 148   1      //      push_ptr();      /* 在现有编译环境下寄存器已经由系统自动保存了 */
+ 149   1              
+ 150   1              TF1 = 0;        //清除中断标志
+ 151   1              
+ 152   1              /* 把转换之前任务的栈指针保存在其任务结构体里面 */
+ 153   1              task_pcb_buf[current_id].sp = SP;
+ 154   1      #if 0
+                      /* 第一版，任务轮流被调用，查找本次任务之后的任务，有的话直接跳到 T2_switch_exit 处执行*/
+                      for(temp = current_id + 1; temp < TASK_MAX; temp ++)
+                      {
+                              if(task_run_flag & (1 << temp))
+                              {
+                                      current_id = temp;
+                                      goto T2_switch_exit;                    
+                              }
+                      }
+              
+                      /* 没有找到正在运行任务之后的任务，返回前面进行查找 */
+                      for(temp = 0; temp < current_id + 1; temp ++)
+                      {
+                              if(task_run_flag & (1 << temp))
+                              {
+                                      current_id = temp;
+                                      goto T2_switch_exit;    
+                              }
+                              else
+                                      goto T2_switch_exit;
+                      }
+              #endif
+C51 COMPILER V9.02   CORE                                                                  03/10/2016 13:23:19 PAGE 4   
+
+ 177   1      
+ 178   1              current_id = 0;
+ 179   1      
+ 180   1              for(temp = 1; temp < TASK_MAX; temp ++)
+ 181   1              {
+ 182   2                      if(task_run_flag & (1 << temp))
+ 183   2                      {
+ 184   3                              if(task_pcb_buf[temp].priority < task_pcb_buf[current_id].priority)
+ 185   3                              {
+ 186   4                                      if(task_pcb_buf[temp].delay != 0)
+ 187   4                                      {
+ 188   5                                              task_pcb_buf[temp].delay --;                    
+ 189   5                                      }
+ 190   4                                      else if(task_pcb_buf[temp].suspend == 1)
+ 191   4                                              continue;
+ 192   4                                      else
+ 193   4                                              current_id = temp;              
+ 194   4                              }
+ 195   3                      }
+ 196   2              }
+ 197   1      
+ 198   1      //T2_switch_exit:
+ 199   1              SP = task_pcb_buf[current_id].sp;       //把要运行的任务SP地址传入SP寄存器
+ 200   1      
+ 201   1              task_runtime ++;        //系统运行时间加1
+ 202   1      
+ 203   1              EA = 1; //任务切换完成，重新开启中断
+ 204   1      }
+ 205          
+ 206          /* 系统任务延时 */
+ 207          void task_delay(unsigned char delay)
+ 208          {
+ 209   1              task_pcb_buf[current_id].delay = delay;
+ 210   1      }
+ 211          
+ 212          /* 打印机资源的使用 */
+ 213          
+ 214          /* 堆栈的测试 */
+ 215          void sp_test(void)
+ 216          {
+ 217   1              SP = task_sp;
+ 218   1      
+ 219   1      }
+ 220          //      #pragma asm
+ 221          //              PUSH DPL
+ 222          //              PUSH DPH
+ 223          //      #pragma endasm
+ 224          
+ 225          //      void push_ptr(void)
+ 226          //{
+ 227          //      #pragma asm
+ 228          //              PUSH ACC
+ 229          //              PUSH B
+ 230          //              PUSH DPL
+ 231          //              PUSH DPH
+ 232          //              PUSH PSW
+ 233          //              PUSH 0
+ 234          //              PUSH 1
+ 235          //              PUSH 2
+ 236          //              PUSH 3
+ 237          //              PUSH 4
+ 238          //              PUSH 5
+C51 COMPILER V9.02   CORE                                                                  03/10/2016 13:23:19 PAGE 5   
+
+ 239          //              PUSH 6
+ 240          //              PUSH 7
+ 241          //      #pragma endasm
+ 242          //}
+ 243          //
+ 244          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    934    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =    317    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3       9
+   IDATA SIZE       =    175    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
