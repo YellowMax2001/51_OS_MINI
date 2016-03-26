@@ -1,0 +1,510 @@
+C51 COMPILER V9.02   TASK                                                                  03/26/2016 11:01:22 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE TASK
+OBJECT MODULE PLACED IN .\task.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\task.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head;../board/
+                    -head) DEBUG OBJECTEXTEND PRINT(.\task.lst) OBJECT(.\task.obj)
+
+line level    source
+
+   1          #include "task.h"
+   2          
+   3          
+   4          /* 命令解释字段 */
+   5          code unsigned char cmd_buff[][100] = {
+   6                  "1.ps:\tdisplay the running tasks\r\n",
+   7                  "2.kill:\tkill the task you have selected\r\n\texample:\r\n\t\tkill 4 ---kill the 4th task\r\n",
+   8                  "3.new:\tcreate a task\r\n\texample:\r\n\t\tnew task2 ---create the task named 'task2'\r\n",
+   9          #ifdef FS_SELECT
+  10                  "4.ls:\tdisplay the files in the current floder\r\n\texample:\r\n\t\tls l ---display in detail\r\n",
+  11                  "5.mkdir:\tcreate a floder\r\n\texample:\r\n\t\tmkdir dir ---make a floder named 'dir'\r\n",
+  12                  "6.touch:\tcrate a text file\r\n\texample:\r\n\t\ttouch txt ---make a file named 'txt'\r\n",
+  13                  "7.cd:\tchange the current floder\r\n\texample:\r\n\t\tcd dir ---change to dir named 'dir'\r\n",
+  14                  "8.mkfs:\tformat all the file system\r\n",
+  15                  "9.rm:\tdelete file \r\n\texample: \r\n\t\trm dir ---delete the file named 'dir'\r\n",
+  16                  "10.vi:\tedit text file\r\n\texample:\r\n\t\t vi txt ---edit the file named 'txt'\r\n",
+  17                  "11.cat:\tlook text file\r\n\texample:\r\n\t\tcat txt ---look up the file named 'txt'\r\n",
+  18          #endif
+  19                  "12.exit:\texit all this system\r\n",
+  20                  "\0"
+  21          };
+  22          
+  23          /* 任务字串解析标志,解析完成标志置0,正在解析标志置1 */
+  24          xdata unsigned char parse_commond_flag = 0;
+  25          
+  26          /* 等待命令解析 */
+  27          static void wait_parse(void)
+  28          {
+  29   1              parse_commond_flag = 1;
+  30   1      
+  31   1              while(parse_commond_flag)
+  32   1              {
+  33   2                      task_delay(2);  //阻塞，等待一个周期再来查询命令是否解析完毕
+  34   2                      TF1 = 1;                        //立马产生一个中断
+  35   2              }
+  36   1      
+  37   1      }
+  38          
+  39          /* 所有的消息处理模块 */
+  40          //'ps'
+  41          static void ps_msghandler(void *msg)
+  42          {
+  43   1              xdata unsigned char i = 0;
+  44   1              xdata unsigned char mod = 0;
+  45   1      
+  46   1      /* 打印出来运行的任务概要 */
+  47   1              printf("There are \"");
+  48   1              uart_send_byte(task_running + 48);
+  49   1              printf("\" tasks are running.");
+  50   1      /* 打印CPU从开机到现在运行的时间 */
+  51   1              printf("\t Cpu has run \"");
+  52   1              putchar(task_runtime / 10000000000+ 48);
+  53   1              putchar(task_runtime % 1000000000 / 1000000000 + 48);
+  54   1              putchar(task_runtime % 100000000 / 10000000 + 48);
+C51 COMPILER V9.02   TASK                                                                  03/26/2016 11:01:22 PAGE 2   
+
+  55   1              putchar(task_runtime % 10000000 / 1000000 + 48);
+  56   1              putchar(task_runtime % 1000000 / 100000 + 48);
+  57   1              putchar(task_runtime % 100000 / 10000 + 48);
+  58   1              putchar(task_runtime % 10000 / 1000 + 48);
+  59   1              putchar(task_runtime % 1000 / 100 + 48);
+  60   1              putchar(task_runtime % 100 / 10 + 48);
+  61   1              putchar(task_runtime % 10 + 48);
+  62   1              printf("\" times\r\n");
+  63   1              uart_send_str("pid\tpriority\tcpu_use\tname\r\n\r\n");
+  64   1      /* 遍历查询正在运行的任务并打印出运行详细情况来 */
+  65   1              for(i = 0; i < TASK_MAX; i ++)
+  66   1              {
+  67   2                      if(task_run_flag & (1 << i))
+  68   2                      {
+  69   3                              mod = (task_pcb_buf[i].run_time) * 100 / task_runtime;
+  70   3                              putchar(i + 48);
+  71   3                              putchar('\t');
+  72   3                              putchar(task_pcb_buf[i].priority / 100 + 48);
+  73   3                              putchar(task_pcb_buf[i].priority % 100 / 10 + 48);
+  74   3                              putchar(task_pcb_buf[i].priority % 10 + 48);
+  75   3                              printf("\t\t");
+  76   3                              putchar(mod / 10 + 48);
+  77   3                              putchar(mod % 10 + 48);
+  78   3                              putchar('\t');
+  79   3                              printf(task_pcb_buf[i].id);
+  80   3                              uart_send_str("\r\n");
+  81   3                      }
+  82   2              }
+  83   1      
+  84   1      //      uart_send_str("You do a 'test' commond\r\n");
+  85   1      }
+*** WARNING C280 IN LINE 41 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+  86          //'kill 'pid''
+  87          static void kill_msghandler(void *msg)
+  88          {               
+  89   1              if(cmd_split[1][0] != '2' && cmd_split[1][0] != '3' && cmd_split[1][0] != '0')
+  90   1              {
+  91   2                      if(task_kill(cmd_split[1][0] - 48))
+  92   2                      {
+  93   3                              printf("The task don't exit\r\n");
+  94   3                      }
+  95   2                      else
+  96   2                      {
+  97   3                              uart_send_str("The task has been killed : pidnum = ");
+  98   3                              uart_send_byte(cmd_split[1][0]);
+  99   3                              uart_send_str("\r\n");
+ 100   3                      }
+ 101   2              }
+ 102   1              else
+ 103   1              {
+ 104   2                      uart_send_str("The task you select can't be killed\r\n");
+ 105   2              }
+ 106   1      }
+*** WARNING C280 IN LINE 87 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 107          /* 'new 'pid'' 新建一个任务*/
+ 108          static void new_msghandler(void *msg)
+ 109          {       
+ 110   1              xdata unsigned char i;
+ 111   1              
+ 112   1              for(i = 0; i < TASK_MAX; i ++)
+ 113   1              {
+ 114   2                      if(task_run_flag & (1 << i))
+C51 COMPILER V9.02   TASK                                                                  03/26/2016 11:01:22 PAGE 3   
+
+ 115   2                      {
+ 116   3                              if(!os_strcmp(cmd_split[1], task_pcb_buf[i].id))
+ 117   3                              {
+ 118   4                                      printf("The task has been exist\r\n");
+ 119   4                                      return;
+ 120   4                              }
+ 121   3                      }
+ 122   2              }
+ 123   1              
+ 124   1              if(!os_strcmp("task1", cmd_split[1]))
+ 125   1              {
+ 126   2                      CREATE_TASK_RUNNING(2, task1, "task1");
+ 127   2                      printf("The task has been created : task name = ");
+ 128   2                      printf(cmd_split[1]);
+ 129   2                      printf("\r\n");
+ 130   2              }
+ 131   1              else if(!os_strcmp("idle", cmd_split[1]))
+ 132   1              {
+ 133   2                      CREATE_TASK_RUNNING(255, idle, "idle");
+ 134   2                      printf("The task has been created : task name = ");
+ 135   2                      printf(cmd_split[1]);
+ 136   2                      printf("\r\n");
+ 137   2              }
+ 138   1              else if(!os_strcmp("task2", cmd_split[1]))
+ 139   1              {
+ 140   2                      CREATE_TASK_RUNNING(3, task2, "task2");
+ 141   2                      uart_send_str("The task has been created : task name = ");
+ 142   2                      uart_send_str(cmd_split[1]);
+ 143   2                      uart_send_str("\r\n");
+ 144   2              }
+ 145   1              else
+ 146   1              {
+ 147   2                      uart_send_str("The task you select can't be created\r\n");
+ 148   2              }
+ 149   1      }
+*** WARNING C280 IN LINE 108 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 150          #ifdef FS_SELECT
+ 151          /* 'ls' 列出当前文件夹下的文件 */
+ 152          static void ls_msghandler(void *msg)
+ 153          {       
+ 154   1      //      xdata unsigned char i;
+ 155   1      
+ 156   1              if(!os_strcmp("", cmd_split[1]))
+ 157   1              {
+ 158   2                      list_file(fs_struct_ptr, 0);
+ 159   2              }
+ 160   1              else if(!os_strcmp("l", cmd_split[1]))
+ 161   1              {
+ 162   2                      list_file(fs_struct_ptr, 1);
+ 163   2              }
+ 164   1              else
+ 165   1              {
+ 166   2                      printf("Unknow target after 'ls'");
+ 167   2              }
+ 168   1              
+ 169   1              printf("\r\n");
+ 170   1      }
+*** WARNING C280 IN LINE 152 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 171          
+ 172          /* 'mkdir 'dirname'' 新建一个文件夹 */
+ 173          static void mkdir_msghandler(void *msg)
+ 174          {       
+C51 COMPILER V9.02   TASK                                                                  03/26/2016 11:01:22 PAGE 4   
+
+ 175   1              xdata unsigned char i;
+ 176   1              xdata unsigned int pos_mod[20];
+ 177   1      
+ 178   1              i = check_buff(cmd_split[1]);
+ 179   1              if(i == 1)
+ 180   1              {
+ 181   2                      printf("There are some invalid words in the dir name string\r\n");
+ 182   2                      return;
+ 183   2              }
+ 184   1              else if(i == 2)
+ 185   1              {
+ 186   2                      printf("Name too large\r\n");
+ 187   2                      return;
+ 188   2              }
+ 189   1      
+ 190   1              if(alloc(FS_PAGE, pos_mod))
+ 191   1              {                       
+ 192   2                      if(create_dir_file(cmd_split[1], pos_mod[0], fs_struct_ptr, NORMAL_DIR_TYPE))
+ 193   2                      {
+ 194   3                              printf("Create error, the same name or no more nodes\r\n");
+ 195   3                      }
+ 196   2              }
+ 197   1              else
+ 198   1              {
+ 199   2                      printf("No more space to create a dir\r\n");
+ 200   2              }
+ 201   1      }
+*** WARNING C280 IN LINE 173 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 202          
+ 203          /* 'touch 'filename'' 新建一个文本文件 */
+ 204          static void touch_msghandler(void *msg)
+ 205          {       
+ 206   1              xdata unsigned char i;
+ 207   1              xdata unsigned int pos_mod[20];
+ 208   1      
+ 209   1              i = check_buff(cmd_split[1]);
+ 210   1              if(i == 1)
+ 211   1              {
+ 212   2                      printf("There are some invalid words in the file name string\r\n");
+ 213   2                      return;
+ 214   2              }
+ 215   1              else if(i == 2)
+ 216   1              {
+ 217   2                      printf("Name too large\r\n");
+ 218   2                      return;
+ 219   2              }
+ 220   1      
+ 221   1              if(alloc(FS_PAGE, pos_mod))
+ 222   1              {                       
+ 223   2                      if(create_dir_file(cmd_split[1], pos_mod[0], fs_struct_ptr, NORMAL_FILE_TYPE))
+ 224   2                      {
+ 225   3                              printf("Create error, the same name or no more nodes\r\n");
+ 226   3                      }
+ 227   2              }
+ 228   1              else
+ 229   1              {
+ 230   2                      printf("No more space to create a file\r\n");
+ 231   2              }
+ 232   1      }
+*** WARNING C280 IN LINE 204 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 233          
+ 234          /* 'cd 'dirname'' ：切换文件夹 */
+C51 COMPILER V9.02   TASK                                                                  03/26/2016 11:01:22 PAGE 5   
+
+ 235          static void cd_msghandler(void *msg)
+ 236          {
+ 237   1              change_dir(cmd_split[1]);
+ 238   1      }
+*** WARNING C280 IN LINE 235 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 239          
+ 240          /* 'mkfs' ：格式化整个根文件系统 */
+ 241          static void mkfs_msghandler(void *msg)
+ 242          {
+ 243   1              fs_format();
+ 244   1      }
+*** WARNING C280 IN LINE 241 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 245           
+ 246          /* 'rm 'filename'' ：删除文件 */
+ 247          static void rm_msghandler(void *msg)
+ 248          {
+ 249   1              ENTER_CRITICAL;
+ 250   1              delete_file(cmd_split[1]);
+ 251   1              EXIT_CRITICAL;
+ 252   1      }
+*** WARNING C280 IN LINE 247 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 253          
+ 254          /* 'vi 'filename'' ：编辑文件 */
+ 255          static void vi_msghandler(void *msg)
+ 256          {
+ 257   1              fs_write(cmd_split[1]);
+ 258   1      }
+*** WARNING C280 IN LINE 255 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 259          
+ 260          /* 'cat 'filename'' ：读取文件 */
+ 261          static void cat_msghandler(void *msg)
+ 262          {
+ 263   1              fs_read(cmd_split[1]);
+ 264   1              printf("\r\n"); //换行
+ 265   1      }
+*** WARNING C280 IN LINE 261 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 266          
+ 267          #endif
+ 268          
+ 269          /* 'help' ：获取帮助文件 */
+ 270          static void help_msghandler(void *msg)
+ 271          {
+ 272   1              unsigned char i = 0, j = 0;
+ 273   1      
+ 274   1              ENTER_CRITICAL;
+ 275   1              while(cmd_buff[i][0])
+ 276   1              {
+ 277   2                      while(cmd_buff[i][j] != '\0')
+ 278   2                      {
+ 279   3                              putchar(cmd_buff[i][j]);
+ 280   3                              j ++;
+ 281   3                      }
+ 282   2                      i ++;
+ 283   2                      j = 0;
+ 284   2              }
+ 285   1              EXIT_CRITICAL;
+ 286   1      }
+*** WARNING C280 IN LINE 270 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 287          
+ 288          /* 'exit' ：退出整个系统 */
+ 289          static void exit_msghandler(void *msg)
+ 290          {
+C51 COMPILER V9.02   TASK                                                                  03/26/2016 11:01:22 PAGE 6   
+
+ 291   1              EA = 0; //置零总中断寄存器，关闭整个系统,使单片机进入掉电模式更好
+ 292   1              TR1 = 0;
+ 293   1              ET1 = 0;
+ 294   1              while(1);
+ 295   1      }
+*** WARNING C280 IN LINE 289 OF ..\SRC\TASK.C: 'msg': unreferenced local variable
+ 296            
+ 297          void task1(void)
+ 298          {       
+ 299   1              while(1)
+ 300   1              {
+ 301   2                      ENLED = 0;
+ 302   2                      P2 = 0x06;
+ 303   2                      P00 = ~P00;
+ 304   2                      OS_delay(500);
+ 305   2              }               
+ 306   1      }
+ 307          
+ 308          /* 系统空闲任务，优先级最低，此任务内不可进行任何操作 */
+ 309          void idle(void)
+ 310          {       
+ 311   1              while(1)
+ 312   1              {
+ 313   2      
+ 314   2              }
+ 315   1      }
+ 316          
+ 317          void task2(void)
+ 318          {       
+ 319   1              while(1)
+ 320   1              {
+ 321   2                      ENLED = 0;
+ 322   2                      P2 = 0x06;
+ 323   2                      P06 = ~P06;
+ 324   2                      OS_delay(50);
+ 325   2              }
+ 326   1      }
+ 327          
+ 328          /* 串口接收字符串进行回显，并把字符串放入一个缓冲区，之后发送命令消息给消息处理函数并解析执行 */
+ 329          void task_tty0(void)
+ 330          {
+ 331   1              static xdata unsigned int reve_buf_len = 0;     //初始化串口接收到的数据串长度为0
+ 332   1      
+ 333   1              printf("#");    //开机打印出提示符
+ 334   1      
+ 335   1              while(1)
+ 336   1              {
+ 337   2                      while(1)
+ 338   2                      {                               
+ 339   3                              reve_buff[reve_buf_len] = uart_reve_byte();     //接收到一个字符并存取到接收缓冲区里面
+ 340   3                              if(reve_buff[reve_buf_len] == 0)                        //如果没有接收到字串，继续查询
+ 341   3                              {
+ 342   4                                      task_delay(2);                                                  //延时两个任务周期，以便其他任务继续执行
+ 343   4                                      TF1 = 1;        //立马产生一个中断
+ 344   4                              }
+ 345   3                              else
+ 346   3                                      break;
+ 347   3                      }
+ 348   2      
+ 349   2                      if(reve_buf_len >= 254)
+ 350   2                      {
+ 351   3                              
+C51 COMPILER V9.02   TASK                                                                  03/26/2016 11:01:22 PAGE 7   
+
+ 352   3                              printf("\r\nToo much words\r\n");               //用户输入的字符数量过多
+ 353   3                              printf("Please input your commond again and dont't more than 254\r\n#");                
+ 354   3      //                      clear_char_str(reve_buff, 256);         //清除整个数组，其实清除不清除并不影响，此处暂且注释掉
+ 355   3                              reve_buf_len = 0;
+ 356   3                      }       
+ 357   2                      else
+ 358   2                      {
+ 359   3                              if(reve_buff[reve_buf_len] == '\b')
+ 360   3                              {
+ 361   4                                      if(reve_buf_len > 0)
+ 362   4                                      {
+ 363   5                                              reve_buf_len --;
+ 364   5                                              printf("\b \b");
+ 365   5                                      }
+ 366   4                              }
+ 367   3                              else if(reve_buff[reve_buf_len] == '\r')                //接收到换行符
+ 368   3                              {
+ 369   4                                      reve_buff[reve_buf_len] = '\0';         //将当前的换行字符替换为字符串结束符用来比较
+ 370   4                                      DESUSPEND_TASK(TASK_MSGHANDLER);        //消息处理函数解挂起
+ 371   4                                      wait_parse();                                           //等待命令解析完成
+ 372   4      //                              clear_char_str(reve_buff, 256);         //清除整个数组，其实清除不清除并不影响，此处暂且注释掉
+ 373   4                                      reve_buf_len = 0;                                       //字串的索引置0以便重新接受输入
+ 374   4                              }
+ 375   3                              else
+ 376   3                              {
+ 377   4                                      uart_send_byte(reve_buff[reve_buf_len]);        //将刚刚接收到的一个字节并且发送给串口软件显示
+ 378   4                                      reve_buf_len ++;                                                        //字串索引值加1
+ 379   4                              }
+ 380   3                              
+ 381   3                      }
+ 382   2              }       
+ 383   1      }
+ 384          
+ 385          /* 消息处理函数，对串口接收到的命令进行相应的处理 */
+ 386          void task_msghandler(void)
+ 387          {       
+ 388   1              while(1)
+ 389   1              {               
+ 390   2                      uart_send_str("\r\n");
+ 391   2                      
+ 392   2                      split_str(reve_buff, cmd_split);
+ 393   2                      
+ 394   2                      if(!os_strcmp("kill", cmd_split[0]))
+ 395   2                      {
+ 396   3                              kill_msghandler(0);
+ 397   3                      }
+ 398   2                      else if(!os_strcmp("new", cmd_split[0]))
+ 399   2                      {
+ 400   3                              new_msghandler(0);
+ 401   3                      }
+ 402   2                      else if(!os_strcmp("ps", cmd_split[0]))
+ 403   2                      {
+ 404   3                              ps_msghandler(0);
+ 405   3                      }
+ 406   2      #ifdef FS_SELECT
+ 407   2                      else if(!os_strcmp("ls", cmd_split[0]))
+ 408   2                      {
+ 409   3                              ls_msghandler(0);
+ 410   3                      }
+ 411   2                      else if(!os_strcmp("mkdir", cmd_split[0]))
+ 412   2                      {
+ 413   3                              mkdir_msghandler(0);
+C51 COMPILER V9.02   TASK                                                                  03/26/2016 11:01:22 PAGE 8   
+
+ 414   3                      }
+ 415   2                      else if(!os_strcmp("touch", cmd_split[0]))
+ 416   2                      {
+ 417   3                              touch_msghandler(0);
+ 418   3                      }
+ 419   2                      else if(!os_strcmp("cd", cmd_split[0]))
+ 420   2                      {
+ 421   3                              cd_msghandler(0);
+ 422   3                      }
+ 423   2                      else if(!os_strcmp("mkfs", cmd_split[0]))
+ 424   2                      {
+ 425   3                              mkfs_msghandler(0);
+ 426   3                      }
+ 427   2                      else if(!os_strcmp("rm", cmd_split[0]))
+ 428   2                      {
+ 429   3                              rm_msghandler(0);
+ 430   3                      }
+ 431   2                      else if(!os_strcmp("vi", cmd_split[0]))
+ 432   2                      {
+ 433   3                              vi_msghandler(0);
+ 434   3                      }
+ 435   2                      else if(!os_strcmp("cat", cmd_split[0]))
+ 436   2                      {
+ 437   3                              cat_msghandler(0);
+ 438   3                      }
+ 439   2      #endif
+ 440   2                      else if(!os_strcmp("help", cmd_split[0]))
+ 441   2                      {
+ 442   3                              help_msghandler(0);
+ 443   3                      }
+ 444   2                      else if(!os_strcmp("exit", cmd_split[0]))
+ 445   2                      {
+ 446   3                              exit_msghandler(0);
+ 447   3                      }
+ 448   2                      else if(os_strcmp("", cmd_split[0]))
+ 449   2                      {
+ 450   3                              uart_send_str(cmd_split[0]);
+ 451   3                              uart_send_str(": undefined commond\r\n");
+ 452   3                      }
+ 453   2                                      
+ 454   2                      uart_send_str("#");     //发送提示符
+ 455   2                      parse_commond_flag = 0; //任务解析完毕
+ 456   2                      SUSPEND_TASK(TASK_MSGHANDLER);  //自挂起，应该先挂起再等待
+ 457   2                      TF1 = 1;                        //立刻产生一个中断，避免多次执行到任务  
+ 458   2              }
+ 459   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   3233    ----
+   CONSTANT SIZE    =   2043    ----
+   XDATA SIZE       =      3      85
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      41
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  13 WARNING(S),  0 ERROR(S)

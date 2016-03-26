@@ -1,0 +1,1 @@
+"..\src\vector.c" OPTIMIZE (2,SPEED) BROWSE INCDIR(../head;../board/head) DEBUG OBJECTEXTEND PRINT(.\vector.lst) OBJECT(.\vector.obj)

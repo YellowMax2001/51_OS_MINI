@@ -1,0 +1,118 @@
+C51 COMPILER V9.02   EEPROM                                                                03/26/2016 10:59:51 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE EEPROM
+OBJECT MODULE PLACED IN .\eeprom.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\eeprom.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head;../boar
+                    -d/head) DEBUG OBJECTEXTEND PRINT(.\eeprom.lst) OBJECT(.\eeprom.obj)
+
+line level    source
+
+   1          #include <eeprom.h>
+   2          #include <common.h>
+   3          
+   4          /*****************************************
+   5           * 关闭IAP
+   6           * 例:iap_idle();
+   7           *****************************************/
+   8          static void iap_idle(void)
+   9          {
+  10   1              IAP_CONTR = 0;          //关闭IAP功能
+  11   1              IAP_CMD   = 0;          //清除命令寄存器
+  12   1              IAP_TRIG  = 0;          //清除触发寄存器
+  13   1      //      IAP_ADDRH = 0x00;       //将地址设置到非IAP区域
+  14   1      //      IAP_ADDRL = 0x00;
+  15   1      }
+  16          
+  17          /*****************************************
+  18           * EEPROM写入数据
+  19           * 例:iap_write(10,'A'); 向地址为10的EEPROM写入数据A
+  20           *****************************************/
+  21          void iap_write(uint address, uchar wdata)
+  22          {
+  23   1              IAP_CONTR = 0x01;                               //24M设为1
+  24   1              IAP_CONTR |= 0x80;                              //使能
+  25   1              IAP_CMD   = CMD_WRITE;          //选择命令为‘写命令’
+  26   1              IAP_ADDRH = address >> 8;               //写地址高位
+  27   1              IAP_ADDRL = address;                //写地址低位
+  28   1      
+  29   1              IAP_DATA  = wdata;
+  30   1              IAP_TRIG=0x5A;IAP_TRIG=0xA5;
+  31   1              _nop_();_nop_();                                //触发操作，写入数据
+  32   1              iap_idle();             //关闭IAP
+  33   1      }
+  34          
+  35          /*****************************************
+  36           * EEPROM写入长数据
+  37           * 例:iap_write_str(10, "1234567", 7); 向地址为10的EEPROM写入字符串"1234567",写入长度为7
+  38           *****************************************/
+  39          void iap_write_str(uint address, uchar wdata, uint len)
+  40          {
+  41   1              IAP_CONTR = 0x01;                               //24M设为1
+  42   1              IAP_CONTR |= 0x80;                              //使能
+  43   1              IAP_CMD   = CMD_WRITE;          //选择命令为‘写命令’
+  44   1              IAP_ADDRH = address >> 8;               //写地址高位
+  45   1              IAP_ADDRL = address;                //写地址低位
+  46   1      
+  47   1              IAP_DATA  = wdata;
+  48   1              IAP_TRIG=0x5A;IAP_TRIG=0xA5;
+  49   1              _nop_();_nop_();                                //触发操作，写入数据
+  50   1              iap_idle();             //关闭IAP
+  51   1      }
+*** WARNING C280 IN LINE 39 OF ..\SRC\EEPROM.C: 'len': unreferenced local variable
+  52          
+  53          /*****************************************
+C51 COMPILER V9.02   EEPROM                                                                03/26/2016 10:59:51 PAGE 2   
+
+  54           * EEPROM读出数据
+  55           * 例:dat = iap_read(10); 读地址为10的EEPROM存入dat
+  56           *****************************************/
+  57          uchar iap_read(uint address)
+  58          {
+  59   1              uchar rdata;
+  60   1      
+  61   1              IAP_CONTR = 0x01;                               //24M设为1
+  62   1              IAP_CONTR |= 0x80;                              //使能
+  63   1              IAP_CMD   = CMD_READ;           //选择命令为‘写命令’
+  64   1              IAP_ADDRH = address >> 8;               //写地址高位
+  65   1              IAP_ADDRL = address;                //写地址低位
+  66   1              
+  67   1              IAP_TRIG=0x5A;IAP_TRIG=0xA5;
+  68   1              _nop_();_nop_();                                //触发操作，触发读入数据
+  69   1              rdata     = IAP_DATA;
+  70   1              iap_idle();             //关闭IAP
+  71   1      
+  72   1              return rdata;
+  73   1      }
+  74          
+  75          /*****************************************
+  76           * EEPROM擦除数据
+  77           * 例:iap_erase(0); 擦除EEPROM数据
+  78           *****************************************/
+  79          void iap_erase(uint address)
+  80          {
+  81   1              IAP_CONTR = 0x01;                               //24M设为1
+  82   1              IAP_CONTR |= 0x80;                              //使能
+  83   1              IAP_CMD   = CMD_ERASE;          //选择命令为‘擦除’
+  84   1              IAP_ADDRH = address / 256;              //写地址高位
+  85   1              IAP_ADDRL = address % 256;              //写地址低位
+  86   1              
+  87   1              IAP_TRIG=0x5A;IAP_TRIG=0xA5;
+  88   1              _nop_();_nop_();_nop_();_nop_();                                //触发操作，触发擦除数据
+  89   1      
+  90   1              iap_idle();             //关闭IAP
+  91   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    174    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      13
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

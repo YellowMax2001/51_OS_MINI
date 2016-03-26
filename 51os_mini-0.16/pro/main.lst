@@ -1,0 +1,52 @@
+C51 COMPILER V9.02   MAIN                                                                  03/26/2016 11:01:22 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\main.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\main\main.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head;../board
+                    -/head) DEBUG OBJECTEXTEND PRINT(.\main.lst) OBJECT(.\main.obj)
+
+line level    source
+
+   1          #include "task.h"
+   2          
+   3          void main(void)
+   4          {
+   5   1              uart_bartvar(24, 115200);
+   6   1              timer1_init(10000);
+   7   1              EA = 0;
+   8   1      //      timer0_init(10000);
+   9   1      //      EA = 0;
+  10   1      
+  11   1              OS_init();
+  12   1              
+  13   1              task_create(255, (unsigned int)(&idle), 0, "idle");     
+  14   1              task_create(2, (unsigned int)(&task1), 0, "task1");     
+  15   1              task_create(1, (unsigned int)(&task_msghandler), 0, "task_msghandler");
+  16   1              task_create(0, (unsigned int)(&task_tty0), 0, "task_tty0");
+  17   1              task_create(3, (unsigned int)(&task2), 0, "task2");     
+  18   1      #ifdef FS_SELECT
+  19   1              /* 创建根目录 */
+  20   1              create_dir_file("/", FS_BEGIN, FS_BEGIN, ROOT_DIR);
+  21   1              fs_struct_ptr = FS_BEGIN;
+  22   1              first_empty_page = FS_BEGIN + FS_PAGE;
+  23   1      #endif
+  24   1              OS_start();
+  25   1              
+  26   1              while(1);
+  27   1      }
+  28          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    232    ----
+   CONSTANT SIZE    =     45    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

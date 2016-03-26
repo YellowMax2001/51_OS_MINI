@@ -1,0 +1,205 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Project:</h2>
+E:\ProjectFiles\keil4\第一代51操作系统\添加ps命令5\pro\STC15.uvproj
+Project File Date:  03/18/2016
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling main.c...
+compiling eeprom.c...
+compiling uart.c...
+compiling vector.c...
+compiling core.c...
+..\SRC\CORE.C(143): warning C280: 'stack_p': unreferenced local variable
+compiling task.c...
+..\SRC\TASK.C(20): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(45): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(66): warning C280: 'msg': unreferenced local variable
+linking...
+Program Size: data=120.1 xdata=698 code=7934
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 4 Warning(s).
+Build target 'Target 1'
+compiling task.c...
+..\SRC\TASK.C(20): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(45): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(66): warning C280: 'msg': unreferenced local variable
+linking...
+Program Size: data=120.1 xdata=698 code=8008
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 3 Warning(s).
+Build target 'Target 1'
+compiling core.c...
+..\SRC\CORE.C(143): warning C280: 'stack_p': unreferenced local variable
+compiling task.c...
+..\SRC\TASK.C(20): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(45): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(66): warning C280: 'msg': unreferenced local variable
+linking...
+Program Size: data=120.1 xdata=698 code=8012
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 4 Warning(s).
+Build target 'Target 1'
+compiling main.c...
+compiling core.c...
+..\SRC\CORE.C(152): warning C280: 'stack_p': unreferenced local variable
+compiling task.c...
+..\SRC\TASK.C(31): error C202: 'task_runtime': undefined identifier
+..\SRC\TASK.C(32): error C202: 'task_runtime': undefined identifier
+..\SRC\TASK.C(33): error C202: 'task_runtime': undefined identifier
+..\SRC\TASK.C(34): error C202: 'task_runtime': undefined identifier
+..\SRC\TASK.C(35): error C202: 'task_runtime': undefined identifier
+..\SRC\TASK.C(36): error C202: 'task_runtime': undefined identifier
+..\SRC\TASK.C(37): error C202: 'task_runtime': undefined identifier
+..\SRC\TASK.C(38): error C202: 'task_runtime': undefined identifier
+..\SRC\TASK.C(39): error C202: 'task_runtime': undefined identifier
+..\SRC\TASK.C(40): error C202: 'task_runtime': undefined identifier
+Target not created
+Build target 'Target 1'
+compiling main.c...
+compiling core.c...
+..\SRC\CORE.C(152): warning C280: 'stack_p': unreferenced local variable
+compiling task.c...
+..\SRC\TASK.C(20): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(66): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(87): warning C280: 'msg': unreferenced local variable
+linking...
+Program Size: data=120.1 xdata=718 code=8863
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 4 Warning(s).
+Build target 'Target 1'
+compiling main.c...
+..\MAIN\MAIN.C(13): error C202: 'idle': undefined identifier
+compiling task.c...
+..\SRC\TASK.C(20): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(66): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(112): error C202: 'idle': undefined identifier
+Target not created
+Build target 'Target 1'
+compiling main.c...
+compiling task.c...
+..\SRC\TASK.C(20): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(66): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(87): warning C280: 'msg': unreferenced local variable
+linking...
+Program Size: data=120.1 xdata=718 code=8847
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 3 Warning(s).
+Build target 'Target 1'
+compiling task.c...
+..\SRC\TASK.C(29): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(75): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(96): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(140): warning C280: 'msg': unreferenced local variable
+linking...
+Program Size: data=120.1 xdata=718 code=9549
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 4 Warning(s).
+Build target 'Target 1'
+compiling task.c...
+..\SRC\TASK.C(29): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(75): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(96): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(140): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(159): warning C280: 'msg': unreferenced local variable
+linking...
+Program Size: data=120.1 xdata=718 code=9617
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 5 Warning(s).
+Build target 'Target 1'
+compiling main.c...
+compiling task.c...
+..\SRC\TASK.C(29): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(75): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(96): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(140): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(164): error C202: 'PC': undefined identifier
+Target not created
+Build target 'Target 1'
+compiling task.c...
+..\SRC\TASK.C(29): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(75): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(96): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(140): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(159): warning C280: 'msg': unreferenced local variable
+linking...
+*** WARNING L13: RECURSIVE CALL TO SEGMENT
+    SEGMENT: ?PR?MAIN?MAIN
+    CALLER:  ?PR?_EXIT_MSGHANDLER?TASK
+Program Size: data=120.1 xdata=718 code=9620
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 6 Warning(s).
+Build target 'Target 1'
+compiling main.c...
+..\MAIN\MAIN.C(4): error C231: 'main': redefinition
+..\MAIN\MAIN.C(22): error C231: 'main': redefinition
+Target not created
+Build target 'Target 1'
+compiling main.c...
+compiling task.c...
+..\SRC\TASK.C(29): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(75): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(96): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(140): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(159): warning C280: 'msg': unreferenced local variable
+linking...
+*** ERROR L107: ADDRESS SPACE OVERFLOW
+    SPACE:   DATA    
+    SEGMENT: ?DT?_IAP_ERASE?EEPROM
+    LENGTH:  0002H
+*** ERROR L107: ADDRESS SPACE OVERFLOW
+    SPACE:   DATA    
+    SEGMENT: ?DT?_OS_DELAY?CORE
+    LENGTH:  0002H
+*** ERROR L107: ADDRESS SPACE OVERFLOW
+    SPACE:   DATA    
+    SEGMENT: ?DT?OS_INIT?CORE
+    LENGTH:  0002H
+*** ERROR L107: ADDRESS SPACE OVERFLOW
+    SPACE:   DATA    
+    SEGMENT: ?DT?_TASK_KILL?CORE
+    LENGTH:  0001H
+*** ERROR L107: ADDRESS SPACE OVERFLOW
+    SPACE:   DATA    
+    SEGMENT: ?DT?CORE
+    LENGTH:  0001H
+*** ERROR L107: ADDRESS SPACE OVERFLOW
+    SPACE:   DATA    
+    SEGMENT: ?DT?_TASK_DELAY?CORE
+    LENGTH:  0001H
+*** ERROR L107: ADDRESS SPACE OVERFLOW
+    SPACE:   DATA    
+    SEGMENT: _DATA_GROUP_
+    LENGTH:  0001H
+Program Size: data=168.1 xdata=719 code=9476
+Target not created
+Build target 'Target 1'
+compiling main.c...
+compiling task.c...
+..\SRC\TASK.C(29): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(75): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(96): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(140): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(164): warning C206: 'main': missing function-prototype
+..\SRC\TASK.C(159): warning C280: 'msg': unreferenced local variable
+linking...
+*** WARNING L13: RECURSIVE CALL TO SEGMENT
+    SEGMENT: ?PR?MAIN?MAIN
+    CALLER:  ?PR?_EXIT_MSGHANDLER?TASK
+Program Size: data=120.1 xdata=718 code=9620
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 7 Warning(s).
+Build target 'Target 1'
+compiling task.c...
+..\SRC\TASK.C(29): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(75): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(96): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(140): warning C280: 'msg': unreferenced local variable
+..\SRC\TASK.C(159): warning C280: 'msg': unreferenced local variable
+linking...
+Program Size: data=120.1 xdata=718 code=9617
+creating hex file from "STC15"...
+"STC15" - 0 Error(s), 5 Warning(s).

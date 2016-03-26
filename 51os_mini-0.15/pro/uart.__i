@@ -1,0 +1,1 @@
+"..\src\uart.c" OPTIMIZE (2,SPEED) BROWSE INCDIR(../head;../board/head) DEBUG OBJECTEXTEND PRINT(.\uart.lst) OBJECT(.\uart.obj)

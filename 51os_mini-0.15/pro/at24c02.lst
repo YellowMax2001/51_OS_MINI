@@ -1,0 +1,173 @@
+C51 COMPILER V9.02   AT24C02                                                               03/18/2016 09:44:29 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE AT24C02
+OBJECT MODULE PLACED IN .\at24c02.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\board\src\at24c02.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head;
+                    -../board/head) DEBUG OBJECTEXTEND PRINT(.\at24c02.lst) OBJECT(.\at24c02.obj)
+
+line level    source
+
+   1          #include "at24c02.h"
+   2          
+   3          static void i2c_delay(void)
+   4          {
+   5   1              unsigned char xdata i;
+   6   1              for(i = 0; i < 10; i ++)
+   7   1              {
+   8   2                      _nop_();
+   9   2              }
+  10   1      }
+  11          
+  12          static void i2c_start(void)
+  13          {
+  14   1              SDA = 1;
+  15   1      //      _nop_(); _nop_(); _nop_(); _nop_();
+  16   1              SCL = 1;
+  17   1              i2c_delay();
+  18   1              SDA = 0;
+  19   1              i2c_delay();
+  20   1      }
+  21          
+  22          static void i2c_stop(void)
+  23          {
+  24   1              SDA = 0;
+  25   1      //      _nop_(); _nop_(); _nop_(); _nop_();
+  26   1              SCL = 1;
+  27   1              i2c_delay();
+  28   1              SDA = 1;
+  29   1              i2c_delay();    
+  30   1      }
+  31          
+  32          static void i2c_ack(void)
+  33          {
+  34   1              SCL = 0;
+  35   1              i2c_delay();
+  36   1              SCL = 1;
+  37   1              i2c_delay();
+  38   1      //      while(SDA);
+  39   1              SCL = 0;
+  40   1              i2c_delay();
+  41   1      }
+  42          
+  43          static void i2c_write_cmd(unsigned char cmd)
+  44          {
+  45   1              unsigned char xdata i;
+  46   1      
+  47   1              for(i = 0; i < 8; i ++)
+  48   1              {
+  49   2                      SCL = 0;
+  50   2      //              i2c_delay();
+  51   2                      SDA = cmd >> 7;
+  52   2                      i2c_delay();
+  53   2                      SCL = 1;
+  54   2                      i2c_delay();
+C51 COMPILER V9.02   AT24C02                                                               03/18/2016 09:44:29 PAGE 2   
+
+  55   2                      cmd = cmd << 1;
+  56   2              }
+  57   1      }
+  58          
+  59          static unsigned char i2c_readcmd(void)
+  60          {
+  61   1              unsigned char xdata i;
+  62   1              unsigned char read_mod = 0;     
+  63   1      
+  64   1              for(i = 0; i < 8; i ++)
+  65   1              {
+  66   2                      SCL = 0;
+  67   2                      i2c_delay();
+  68   2                      SCL = 1;
+  69   2                      i2c_delay();
+  70   2                      read_mod = read_mod << 1;
+  71   2                      read_mod |= SDA;                        
+  72   2              }
+  73   1      
+  74   1              return read_mod;
+  75   1      }
+  76          
+  77          unsigned char i2c_readbyte(unsigned char addr)
+  78          {
+  79   1              unsigned char read_mod = 0;
+  80   1              
+  81   1              i2c_start();
+  82   1              i2c_write_cmd(WRTIE_ADDR);
+  83   1              i2c_ack();
+  84   1              i2c_write_cmd(addr);
+  85   1              i2c_ack();
+  86   1              i2c_start();
+  87   1              i2c_write_cmd(READ_ADDR);
+  88   1              i2c_ack();
+  89   1      
+  90   1              read_mod = i2c_readcmd();
+  91   1              i2c_stop();
+  92   1      
+  93   1              return read_mod;
+  94   1      }
+  95          
+  96          unsigned char *i2c_readpage(unsigned char addr, unsigned char len)
+  97          {
+  98   1              unsigned char xdata *read_str;  
+  99   1      
+ 100   1              i2c_start();
+ 101   1              i2c_write_cmd(WRTIE_ADDR);
+ 102   1              i2c_ack();
+ 103   1              i2c_write_cmd(addr);
+ 104   1              i2c_ack();
+ 105   1              i2c_start();
+ 106   1              i2c_write_cmd(READ_ADDR);
+ 107   1              i2c_ack();
+ 108   1      
+ 109   1              while(len --)
+ 110   1              {
+ 111   2                      *read_str++ = i2c_readcmd();
+ 112   2                      i2c_ack();
+ 113   2              }
+ 114   1              i2c_stop();
+ 115   1      
+ 116   1              return read_str;
+C51 COMPILER V9.02   AT24C02                                                               03/18/2016 09:44:29 PAGE 3   
+
+ 117   1      }
+ 118          
+ 119          void i2c_writebyte(unsigned char addr, unsigned char dat)
+ 120          {       
+ 121   1              i2c_start();
+ 122   1              i2c_write_cmd(WRTIE_ADDR);
+ 123   1              i2c_ack();
+ 124   1              i2c_write_cmd(addr);
+ 125   1              i2c_ack();
+ 126   1              i2c_write_cmd(dat);
+ 127   1              i2c_ack();
+ 128   1              i2c_stop();     
+ 129   1      }
+ 130          
+ 131          void i2c_writepage(unsigned char addr, unsigned char *dat)
+ 132          {
+ 133   1              i2c_start();
+ 134   1              i2c_write_cmd(WRTIE_ADDR);
+ 135   1              i2c_ack();
+ 136   1              i2c_write_cmd(addr);
+ 137   1              i2c_ack();
+ 138   1              while(*dat)
+ 139   1              {
+ 140   2                      i2c_write_cmd(*dat++);
+ 141   2                      i2c_ack();
+ 142   2                      i2c_delay();
+ 143   2              }
+ 144   1              i2c_stop();
+ 145   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    414    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      14
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

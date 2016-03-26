@@ -1,0 +1,12 @@
+".\main.obj",
+".\eeprom.obj",
+".\uart.obj",
+".\vector.obj",
+".\core.obj",
+".\task.obj",
+".\char.obj",
+".\fs.obj",
+".\nt_led.obj" 
+TO "STC15" 
+RAMSIZE(256) 
+DISABLEWARNING (16) 

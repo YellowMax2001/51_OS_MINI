@@ -1,0 +1,94 @@
+C51 COMPILER V9.02   NT_LED                                                                03/26/2016 10:58:49 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE NT_LED
+OBJECT MODULE PLACED IN .\nt_led.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\board\src\nt_led.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head;.
+                    -./board/head) DEBUG OBJECTEXTEND PRINT(.\nt_led.lst) OBJECT(.\nt_led.obj)
+
+line level    source
+
+   1          #include <nt_led.h>
+   2          
+   3          code uchar duan[]  = {0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90,0xFF};
+   4          code uchar wei[]   = {0xF0,0xF1,0xF2,0xF3,0xF4,0xF5};
+   5          code uchar l_wei[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};    //蓝桥杯板子的位选
+   6          
+   7          code uchar dula_yin[] = {0x3f,0x06,0x5b,0x4f, 0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c, 0x39,0x5e,0x79,0x71
+             -};
+   8          code uchar wela_yin[] = {0xFE,0xFD,0xFB,0xF7}; 
+   9          
+  10          static void delay(unsigned int delay)
+  11          {
+  12   1              while(delay--);
+  13   1      }
+  14          
+  15          /*****************************************
+  16           *数码管显示函数 
+  17           *例:nt_disp(32,num_check,num_div) 显示32 
+  18           *****************************************/
+  19          void nt_disp(uint num,uint num_check,uchar num_div[])
+  20          {
+  21   1              if(num - num_check)
+  22   1              {
+  23   2                      num_div[0] = num / 100000;
+  24   2                      num_div[1] = num % 100000 / 10000;
+  25   2                      num_div[2] = num % 10000  / 1000;
+  26   2                      num_div[3] = num % 1000   / 100;
+  27   2                      num_div[4] = num % 100    / 10;
+  28   2                      num_div[5] = num % 10;
+  29   2      
+  30   2                      num_check = num;
+  31   2              }
+  32   1      
+  33   1               P0 = duan[num_div[0]]; P2 |= 0x07; P2 &= wei[0];       delay(1);
+  34   1               P0 = duan[num_div[1]]; P2 |= 0x07; P2 &= wei[1];       delay(1);
+  35   1               P0 = duan[num_div[2]]; P2 |= 0x07; P2 &= wei[2];       delay(1);
+  36   1               P0 = duan[num_div[3]]; P2 |= 0x07; P2 &= wei[3];       delay(1);
+  37   1               P0 = duan[num_div[4]]; P2 |= 0x07; P2 &= wei[4];       delay(1);
+  38   1               P0 = duan[num_div[5]]; P2 |= 0x07; P2 &= wei[5];       delay(1);
+  39   1      }
+  40          
+  41          /*****************************************
+  42           *数码管显示函数，用于中断函数内部 
+  43           *例:nt_disp(32, cont) 显示32 
+  44           *****************************************/
+  45          void nt_disp_vector(uint32 num, uchar cont)
+  46          {
+  47   1              uchar num_div[6];
+  48   1              
+  49   1              num_div[0] = num / 100000;
+  50   1              num_div[1] = num % 100000 / 10000;
+  51   1              num_div[2] = num % 10000  / 1000;
+  52   1              num_div[3] = num % 1000   / 100;
+  53   1              num_div[4] = num % 100    / 10;
+C51 COMPILER V9.02   NT_LED                                                                03/26/2016 10:58:49 PAGE 2   
+
+  54   1              num_div[5] = num % 10;
+  55   1      
+  56   1              switch(cont)
+  57   1              {
+  58   2                      case 0: {P2 = wei[0]; P0 = duan[num_div[0]]; break;}
+  59   2                      case 1: {P2 = wei[1]; P0 = duan[num_div[1]]; break;}
+  60   2                      case 2: {P2 = wei[2]; P0 = duan[num_div[2]]; break;}
+  61   2                      case 3: {P2 = wei[3]; P0 = duan[num_div[3]]; break;}
+  62   2                      case 4: {P2 = wei[4]; P0 = duan[num_div[4]]; break;}
+  63   2                      case 5: {P2 = wei[5]; P0 = duan[num_div[5]]; break;}    
+  64   2      
+  65   2                      default: break;
+  66   2              }
+  67   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    900    ----
+   CONSTANT SIZE    =     45    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      20
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

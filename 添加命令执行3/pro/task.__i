@@ -1,1 +1,0 @@
-"..\src\task.c" OPTIMIZE (2,SPEED) BROWSE INCDIR(../head) DEBUG OBJECTEXTEND PRINT(.\task.lst) OBJECT(.\task.obj)

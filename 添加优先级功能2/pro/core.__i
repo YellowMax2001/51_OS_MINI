@@ -1,1 +1,0 @@
-"..\src\core.c" OPTIMIZE (2,SPEED) BROWSE INCDIR(../head) DEBUG OBJECTEXTEND PRINT(.\core.lst) OBJECT(.\core.obj)

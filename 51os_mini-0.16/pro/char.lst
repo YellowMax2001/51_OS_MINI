@@ -1,0 +1,113 @@
+C51 COMPILER V9.02   CHAR                                                                  03/26/2016 10:58:48 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE CHAR
+OBJECT MODULE PLACED IN .\char.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\char.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head;../board/
+                    -head) DEBUG OBJECTEXTEND PRINT(.\char.lst) OBJECT(.\char.obj)
+
+line level    source
+
+   1          #include "char.h"
+   2          
+   3          /* 清除字串，长度为len个字节 */
+   4          void clear_char_str(unsigned char *str2clear, unsigned int len)
+   5          {
+   6   1              xdata unsigned int i;   
+   7   1      
+   8   1              for(i = 0; i < len; i++)
+   9   1              {
+  10   2                      str2clear[i] = 0;
+  11   2              }
+  12   1      }
+  13          
+  14          /* 比较两个字符串是否相同，相同返回0，否则返回1 */
+  15          unsigned char os_strcmp(unsigned char *str1, unsigned char *str2)
+  16          {
+  17   1              while((*str1) || (*str2))
+  18   1              {
+  19   2                      if(*str1++ != *str2++)
+  20   2                              return 1;
+  21   2              }
+  22   1              return 0;
+  23   1      }
+  24          
+  25          /* 字符串按空格进行拆分 */ 
+  26          unsigned char split_str(unsigned char *str2split, unsigned char split[][20]) 
+  27          {
+  28   1              unsigned char i = 0;
+  29   1              unsigned char j = 0;
+  30   1              unsigned char space_end_flag = 1;
+  31   1              
+  32   1              if(*str2split == ' ')
+  33   1              {
+  34   2                      return 1;       //第一个字母就是空格，则退出，显示未识别命令 
+  35   2              } 
+  36   1              
+  37   1              while(*str2split)
+  38   1              {
+  39   2                      if(*str2split == ' ')
+  40   2                      {
+  41   3                              split[i][j] = '\0';
+  42   3                              space_end_flag = 0;
+  43   3                      }
+  44   2                      else
+  45   2                      {
+  46   3                              if(space_end_flag == 0)
+  47   3                              {
+  48   4                                      i ++;
+  49   4                                      j = 0;
+  50   4                                      space_end_flag = 1;
+  51   4                              }
+  52   3                              split[i][j] = (*str2split);
+  53   3                      }
+  54   2                      str2split ++;
+C51 COMPILER V9.02   CHAR                                                                  03/26/2016 10:58:48 PAGE 2   
+
+  55   2                      j ++; 
+  56   2              }
+  57   1              split[i][j] = '\0';
+  58   1              split[i+1][0] = '\0';
+  59   1              
+  60   1              return 0;
+  61   1      }
+  62          
+  63          /* 检查字符串里面是否含有非法字符 */
+  64          unsigned char check_buff(unsigned char *str)
+  65          {
+  66   1              unsigned int i = 0;     
+  67   1      
+  68   1              if(*str)        
+  69   1              {
+  70   2                      while(*str)
+  71   2                      {
+  72   3                              if((*str < 48) || (*str > 122))
+  73   3                              {
+  74   4                                      return 1;
+  75   4                              }
+  76   3                              str ++;
+  77   3                              i ++;
+  78   3                      }
+  79   2                      if(i > 19)
+  80   2                      {
+  81   3                              return 2;
+  82   3                      }
+  83   2      
+  84   2                      return 0;
+  85   2              }
+  86   1              return 1;
+  87   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    518    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       2
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      25
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1 @@
+"..\src\fs.c" OPTIMIZE (2,SPEED) BROWSE INCDIR(../head;../board/head) DEBUG OBJECTEXTEND PRINT(.\fs.lst) OBJECT(.\fs.obj)

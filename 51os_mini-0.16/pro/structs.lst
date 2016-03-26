@@ -1,0 +1,38 @@
+C51 COMPILER V9.02   STRUCTS                                                               03/22/2016 13:49:46 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE STRUCTS
+OBJECT MODULE PLACED IN .\structs.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\structs.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head;../boa
+                    -rd/head) DEBUG OBJECTEXTEND PRINT(.\structs.lst) OBJECT(.\structs.obj)
+
+line level    source
+
+   1          #include "structs.h"
+   2          
+   3          static void _list_add_tail(struct list_head *new, struct list_head *prev, struct list_head *next)
+   4          {
+   5   1              new->next = next;
+   6   1              new->prev = prev;
+   7   1              prev->next = new;
+   8   1              next->prev = new;
+   9   1      }
+  10          
+  11          void mlist_add_tail(struct list_head *new, struct list_head *head)
+  12          {
+  13   1              _list_add_tail(new, head->prev, head);
+  14   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    158    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      15
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

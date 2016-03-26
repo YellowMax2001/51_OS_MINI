@@ -1,0 +1,774 @@
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE FS
+OBJECT MODULE PLACED IN .\fs.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\fs.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head;../board/he
+                    -ad) DEBUG OBJECTEXTEND PRINT(.\fs.lst) OBJECT(.\fs.obj)
+
+line level    source
+
+   1          #include "fs.h"
+   2          
+   3          #ifdef FS_SELECT
+   4          
+   5          /* ¸ÃÖµ´æ´¢Ö¸ÕëµØÖ·£¬¸ÃÖ¸ÕëÖ¸Ïòµ±Ç°ÎÄ¼þ¼Ð */
+   6          xdata unsigned int fs_struct_ptr;
+   7          
+   8          /* ¸ÃÖµ´æ´¢Ö¸ÕëµØÖ·£¬¸ÃÖ¸ÕëÖ¸ÏòµÚÒ»¸ö¿ÕµÄÄÚ´æ¿é£¬¼Ó¿ìÏµÍ³ÄÚ´æ·ÖÅä¹ý³Ì */
+   9          xdata unsigned int first_empty_page;
+  10          
+  11          /* ²Á³ýµÄÊ±ºòÓÃÀ´±£´æÁÙÊ±µÄ±äÁ¿£¬³¤¶ÈÎª92×Ö½Ú */
+  12          xdata unsigned char erase_return_buff[FS_NEED_KEEP];
+  13          
+  14          /* ÍùÎÄ±¾ÎÄ¼þÀïÃæÐ´ÈëÊý¾ÝµÄ»º³åÇø,³¤¶ÈÎª1K×Ö½Ú */
+  15          xdata unsigned char write_buff[1024];
+  16          
+  17          /* 
+  18           * ÔÚÖ¸¶¨µÄÄÚ´æ¿é²éÕÒÏàÓ¦Ãû×ÖµÄnode
+  19           * Àý£ºfind_file(0x5000, "dir1", 0); //ÔÚ0x5000ÄÚ´æ¿é´¦²éÕÒÃû×ÖÎª"dir1"µÄÎÄ¼þ
+  20           * ÈôÕÒµ½Ôò·µ»ØËùÔÚnodeµÄµØÖ·£¬ÈôÃ»ÕÒµ½Ôò·µ»Ø0
+  21           *     find_file(0x5000, "dir1", 1); //ÔÚ0x5000ÄÚ´æ¿é´¦²éÕÒÃû×ÖÎª"dir1"µÄÎÄ¼þ
+  22           * ÈôÕÒµ½Ôò·µ»ØÎÄ¼þµÄµØÖ·£¬ÈôÃ»ÕÒµ½Ôò·µ»Ø0
+  23           */
+  24          unsigned int find_file(unsigned int ptr, unsigned char *name, unsigned char flag)
+  25          {
+  26   1              xdata unsigned int i,count = 0;
+  27   1              xdata unsigned int next_ptr_mod = 0;
+  28   1              xdata unsigned char name_mod[20];
+  29   1              
+  30   1              /* Ìø¹ýËùÓÐ²»ÐèÒª²éÕÒµÄ */
+  31   1              ptr = ptr + FS_FLAG_SIZE + FS_NAME_SIZE + FS_SIZE_SIZE + FS_PREV_SIZE + FS_NEXT_SIZE;
+  32   1      ENTER_CRITICAL; //ÐèÒª³¤Ê±¼äÖ´ÐÐµÄ³ÌÐòÒªÏÈ½øÈëÁÙ½ç¶Î    
+  33   1              /* ²éÕÒ·Ç¿ÕµÄnode½Úµã */
+  34   1              for(i = 0; i < FS_NODE_SIZE; i += 2)
+  35   1              {
+  36   2                      if(iap_read(ptr + i) == 0xFF)
+  37   2                      {
+  38   3      //                      return 0;
+  39   3      //                      printf("0xFF\r\n");
+  40   3                      }
+  41   2                      else
+  42   2                      {
+  43   3                              next_ptr_mod = iap_read(ptr + i + 1);   //¶Á¸ß×Ö½Ú·ÅÈëptr_mod
+  44   3                              next_ptr_mod = next_ptr_mod << 8;                                       //×óÒÆ8Î»£¬·ÅÈëptr_mod¸ß×Ö½Ú
+  45   3                              next_ptr_mod |= iap_read(ptr + i);              //¶ÁµÍ×Ö½Ú·ÅÈëptr_modµÍ8Î»
+  46   3                              
+  47   3                              next_ptr_mod = next_ptr_mod + FS_FLAG_SIZE;             //Ìø¹ýÎÄ¼þÀàÐÍµÄ¶ÁÈ¡£¬ºóÐø»áÌí¼Ó                        
+  48   3      
+  49   3                              while(name_mod[count] = iap_read(next_ptr_mod + count)) //×Ö´®·Ç¿Õ¾ÍÒ»Ö±¶ÁÈ¡Ãû×Ö´æ·Åµ½Êý×é»º³åÇøÖÐ
+  50   3                              {
+  51   4                                      count ++;
+  52   4                              }
+  53   3                              name_mod[count] = '\0'; //×Ö·û´®·â´æ
+  54   3                              
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 2   
+
+  55   3                              if(!os_strcmp("*", name))       /* ÒªÕÒµ½ËùÓÐµÄ×Ö´® */
+  56   3                              {
+  57   4                                      if(flag)
+  58   4                                      {
+  59   5                                              EXIT_CRITICAL;
+  60   5                                              return (next_ptr_mod - FS_FLAG_SIZE);   //Ö»ÒªÕÒµ½µÚÒ»¸ö²»ÊÇ¿ÕµÄnode¾Í·µ»Ø
+  61   5                                      }
+  62   4                                      else
+  63   4                                      {
+  64   5                                              EXIT_CRITICAL;
+  65   5                                              return i;       //Ö»ÒªÕÒµ½µÚÒ»¸ö²»ÊÇ¿ÕµÄnode¾Í·µ»Ø
+  66   5                                      }
+  67   4                                      
+  68   4                              }
+  69   3                              if(!os_strcmp(name_mod, name))   /* ÊÇ·ñÕÒµ½ÏàÓ¦µÄ×Ö´® */
+  70   3                              {
+  71   4      //                              printf("find\r\n");
+  72   4                                      if(flag)
+  73   4                                      {
+  74   5                                              EXIT_CRITICAL;
+  75   5                                              return (next_ptr_mod - FS_FLAG_SIZE);
+  76   5                                      }
+  77   4                                      else
+  78   4                                      {
+  79   5                                              EXIT_CRITICAL;
+  80   5                                              return i;       //·µ»ØnodeµÄµØÖ·
+  81   5                                      }
+  82   4                              }                                       
+  83   3      
+  84   3                              count = 0;      
+  85   3                              next_ptr_mod = 0;       //ÇåÁã£¬µÈ´ýÏÂÒ»´Î²éÕÒ
+  86   3                      }
+  87   2              }
+  88   1      
+  89   1              EXIT_CRITICAL;
+  90   1              return 0;       //Î´ÕÒµ½
+  91   1      }
+  92          
+  93          /* 
+  94           * ¿Õ¼ä·ÖÅä£¬·µ»ØËù·ÖÅäµÄ¿Õ¼äµØÖ·
+  95           * Àý£ºalloc(128 * 3, pos); ·ÖÅäÒ»¸ö128*3×Ö½Ú´óÐ¡µÄ¿Õ¼ä²¢ÇÒ·µ»Ø¿Õ¼äËùÔÚµÄÎ»ÖÃµ½posÖÐ
+  96           * ¸Ãº¯ÊýÈç¹û·µ»ØµÄÊÇ0Ôò±íÊ¾¿Õ¼ä²»×ã£¬·ÖÅäÊ§°Ü
+  97           */
+  98          unsigned int alloc(unsigned int len, unsigned int *pos)
+  99          {
+ 100   1              xdata unsigned int i;
+ 101   1              xdata unsigned int temp;        
+ 102   1              xdata unsigned int find;
+ 103   1      
+ 104   1              /* ÏÈÈ·¶¨Òª·ÖÅäµÄ¿éµÄ´óÐ¡£¬Èç¹û¿é·Ç512×Ö½Ú¶ÔÆë£¬ÔòÐèÒª²¹Æë¶à³öÀ´µÄ²¿·Öµ½512×Ö½Ú */
+ 105   1              if(i = len % FS_PAGE)
+ 106   1              {
+ 107   2                      i = (len + FS_PAGE) / FS_PAGE;
+ 108   2              }
+ 109   1              else
+ 110   1              {
+ 111   2                      i = len / FS_PAGE;
+ 112   2              }
+ 113   1      
+ 114   1              temp = i;
+ 115   1      
+ 116   1              /* ²éÕÒ¿Õ¼äÖÐµÄ¿Õ¿é */
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 3   
+
+ 117   1              for(find = FS_BEGIN; (find < FS_END) && (i > 0); find += FS_PAGE)
+ 118   1              {
+ 119   2                      if(iap_read(find) & 0x01)       //Îª1±íÊ¾´Ë¿éÊÇ¿ÕÏÐµÄ£¬Î´Ê¹ÓÃµÄ
+ 120   2                      {
+ 121   3                              pos[temp-i] = find;     //½«ÕÒµ½µÄ¿ÕÏÐµÄ¿é·ÅÈëpos»º´æÖÐ
+ 122   3                              i --;   //ÕÒµ½Ò»¸ö¿ÕµÄ¿é£¬iµÄÖµ¼õÒ»
+ 123   3                      }
+ 124   2              }
+ 125   1      
+ 126   1              if(i > 0)
+ 127   1              {
+ 128   2                      return 0;       //±íÊ¾¿Õ¼ä²»×ã
+ 129   2              }
+ 130   1              pos[temp] = '\0';       //½«×Ö·û´®·â´æ
+ 131   1      
+ 132   1              return temp;    //·µ»Ø·ÖÅäµÄ¿Õ¼ä¿éÊýÁ¿
+ 133   1      }
+ 134          
+ 135          /* 
+ 136           * ÎÄ¼þÏµÍ³¸ñÊ½»¯
+ 137           * Àý£ºfs_format(); ¸ñÊ½»¯´Ó0x5000µ½0xEFFFÕâ40KµÄµØÖ·¿Õ¼ä
+ 138           */
+ 139          void fs_format(void)
+ 140          {
+ 141   1              xdata unsigned int addr;        
+ 142   1      
+ 143   1              /* Çå¿ÕÎÄ¼þÏµÍ³Çø */
+ 144   1              for(addr = FS_BEGIN; addr < FS_END; addr += 512)
+ 145   1              {
+ 146   2                      iap_erase(addr);
+ 147   2              }
+ 148   1      
+ 149   1              /* ´´½¨¸ùÄ¿Â¼ */
+ 150   1              create_dir_file("/", FS_BEGIN, FS_BEGIN, ROOT_DIR);
+ 151   1              fs_struct_ptr = FS_BEGIN;
+ 152   1              first_empty_page = FS_BEGIN + FS_PAGE;  //Êµ¼ÊÃ»Ê¹ÓÃ
+ 153   1      }
+ 154          
+ 155          /* 
+ 156           * ÎÄ¼þÐ´º¯Êý£¬°üÀ¨ÒªÐ´µÄµØÖ·ÒÔ¼°ÒªÐ´µÄ³¤¶È
+ 157           * Àý£ºfs_write(0x5000, 20, "1234567"); Ïò0x5000µØÖ·Ð´Èë20×Ö½ÚµÄÊý¾Ý£¬ÄÚÈÝÎª"1234567"
+ 158           */
+ 159          void fs_write(unsigned char *name)
+ 160          {
+ 161   1              xdata unsigned int reve_buf_len = 0;
+ 162   1              xdata unsigned char select_cmd = 0;
+ 163   1              xdata unsigned int pos_mod[2] = 0;
+ 164   1              xdata unsigned char pos_number = 0, i = 0;
+ 165   1              xdata unsigned int file_ptr = 0;
+ 166   1              xdata unsigned int file_number = 0;
+ 167   1              
+ 168   1              /* »ñµÃÒªÉ¾³ýÎÄ¼þµÄµØÖ· */
+ 169   1              if(file_ptr = find_file(fs_struct_ptr, name, 1))
+ 170   1              {
+ 171   2                      /* Èç¹ûÊÇ¸öÎÄ¼þ¼Ð£¬ÍË³ö */
+ 172   2                      if(iap_read(file_ptr) & 0x02)
+ 173   2                      {
+ 174   3                              printf("It is a floder\r\n");
+ 175   3                              return;
+ 176   3                      }
+ 177   2              }
+ 178   1              else
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 4   
+
+ 179   1              {
+ 180   2                      printf("No such file\r\n");
+ 181   2                      return;
+ 182   2              }
+ 183   1              
+ 184   1              /* Èç¹ûÎÄ¼þÀïÃæÒÑ¾­ÓÐÁËÄÚÈÝ£¬ÄÇÃ´¾Í²»±à¼­ */
+ 185   1              if(find_file(file_ptr, "*", 1))
+ 186   1              {
+ 187   2                      printf("There are texts in this file, please delete this file and create a new\r\n");
+ 188   2                      return;
+ 189   2              }       
+ 190   1              
+ 191   1              while(1)
+ 192   1              {
+ 193   2                      while(1)
+ 194   2                      {                               
+ 195   3                              write_buff[reve_buf_len] = uart_reve_byte();    //½ÓÊÕµ½Ò»¸ö×Ö·û²¢´æÈ¡µ½½ÓÊÕ»º³åÇøÀïÃæ
+ 196   3                              if(write_buff[reve_buf_len] == 0)                       //Èç¹ûÃ»ÓÐ½ÓÊÕµ½×Ö´®£¬¼ÌÐø²éÑ¯
+ 197   3                              {
+ 198   4                                      task_delay(2);                                                  //ÑÓÊ±Á½¸öÈÎÎñÖÜÆÚ£¬ÒÔ±ãÆäËûÈÎÎñ¼ÌÐøÖ´ÐÐ
+ 199   4                                      TF1 = 1;        //Á¢Âí²úÉúÒ»¸öÖÐ¶Ï
+ 200   4                              }
+ 201   3                              else
+ 202   3                                      break;
+ 203   3                      }
+ 204   2      
+ 205   2                      if(reve_buf_len >= 500) //ÓÉÓÚÃ¿Ò»¸ö¿éÒª½øÐÐ±ê¼Ç£¬ËùÒÔÒªÉÙ2¸ö×Ö½Ú£¬ÓÖÒª±ÜÃâ×Ö·ûÅÐ¶Ï³¬ÏÞ£¬¸É´àÔÙ¼õÉÙ2¸ö×Ö
+             -½Ú
+ 206   2                      {                       
+ 207   3                              printf("\r\nToo much words\r\n");               //ÓÃ»§ÊäÈëµÄ×Ö·ûÊýÁ¿¹ý¶à
+ 208   3                              printf("Please save it now\r\n");
+ 209   3                              goto wait_write_quit;           
+ 210   3                      }       
+ 211   2                      else
+ 212   2                      {
+ 213   3                              if(write_buff[reve_buf_len] == 0x1B)            //½ÓÊÕµ½ESC°´¼ü
+ 214   3                              {
+ 215   4                                      write_buff[reve_buf_len] = '\0';
+ 216   4      wait_write_quit:
+ 217   4                                      write_buff[reve_buf_len + 1] = '\0';
+ 218   4                                      printf("\r\n");
+ 219   4                                      while(1)
+ 220   4                                      {
+ 221   5                                              select_cmd = uart_wait_byte();
+ 222   5                                              putchar(select_cmd);
+ 223   5                                              if(select_cmd == 'w')
+ 224   5                                              {
+ 225   6      //                                              printf(write_buff);
+ 226   6                                                      goto write_buff2eeprom; //Èç¹ûÊÇÐ´ÈëµÄ»°¾ÍÌøµ½Ð´ÈëµÄ³ÌÐòÈë¿Ú
+ 227   6                                              }
+ 228   5                                              else if(select_cmd == 'q')
+ 229   5                                              {
+ 230   6                                                      printf("you quit\r\n");
+ 231   6                                                      return;
+ 232   6                                              }
+ 233   5                                              else
+ 234   5                                              {
+ 235   6                                                      printf("\b \b");        //Ò»Ö±·¢ËÍÍË¸ñÐ´¿ÕÔÙÍË¸ñ£¬ÐÎ³É·ûºÏÎÒÃÇÈÏÖªµÄÍË¸ñ
+ 236   6                                              }
+ 237   5                                      }
+ 238   4                              }
+ 239   3                              else if(write_buff[reve_buf_len] == '\b')               //½ÓÊÕµ½ÍË¸ñ·û
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 5   
+
+ 240   3                              {
+ 241   4                                      if(reve_buf_len > 0)
+ 242   4                                      {
+ 243   5                                              reve_buf_len --;
+ 244   5                                              printf("\b \b");
+ 245   5                                      }
+ 246   4                              }
+ 247   3                              else if(write_buff[reve_buf_len] == '\r')               //½ÓÊÕµ½»»ÐÐ·û
+ 248   3                              {
+ 249   4                                      printf("\r\n");
+ 250   4                                      reve_buf_len ++;
+ 251   4                                      write_buff[reve_buf_len] = '\n';
+ 252   4                                      reve_buf_len ++;
+ 253   4                              }
+ 254   3                              else
+ 255   3                              {
+ 256   4                                      uart_send_byte(write_buff[reve_buf_len]);       //½«¸Õ¸Õ½ÓÊÕµ½µÄÒ»¸ö×Ö½Ú²¢ÇÒ·¢ËÍ¸ø´®¿ÚÈí¼þÏÔÊ¾
+ 257   4                                      reve_buf_len ++;                                                        //×Ö´®Ë÷ÒýÖµ¼Ó1
+ 258   4                              }                       
+ 259   3                      }
+ 260   2              }
+ 261   1      
+ 262   1      write_buff2eeprom:
+ 263   1      ENTER_CRITICAL; //ÐèÒª³¤Ê±¼äÖ´ÐÐµÄ³ÌÐòÒªÏÈ½øÈëÁÙ½ç¶Î
+ 264   1              if(pos_number = alloc(reve_buf_len, pos_mod))
+ 265   1              {
+ 266   2                      /* Ìø¹ýËùÓÐ²»ÐèÒªÉèÖÃµÄ */
+ 267   2                      file_ptr = file_ptr + FS_FLAG_SIZE + FS_NAME_SIZE + FS_SIZE_SIZE + FS_PREV_SIZE + FS_NEXT_SIZE;
+ 268   2                      
+ 269   2                      /* ²éÕÒ¿ÕµÄnode½Úµã */
+ 270   2                      for(i = 0; i < FS_NODE_SIZE; i += 2)
+ 271   2                      {
+ 272   3                              if(iap_read(file_ptr + i) == 0xFF)
+ 273   3                              {
+ 274   4                                      for(file_number = 0; file_number < pos_number; file_number ++)
+ 275   4                                      {
+ 276   5                                              iap_write(file_ptr + i + file_number * 2, pos_mod[file_number] % 256);          //ÏÈÐ´µÍµØÖ·
+ 277   5                                              iap_write(file_ptr + i + 1 + file_number * 2, pos_mod[file_number] / 256);      //ÔÙÐ´¸ßµØÖ·
+ 278   5                                              /* ´òÓ¡ÎÄ¼þÔÚÄÚ´æµ±ÖÐµÄÎ»ÖÃ */
+ 279   5                                              putchar(((pos_mod[file_number]) >> 12) + 48);
+ 280   5                                              putchar((((pos_mod[file_number]) >> 8) & 0x0F) + 48);
+ 281   5                                              putchar((((pos_mod[file_number]) >> 4) & 0x0F) + 48);
+ 282   5                                              putchar((((pos_mod[file_number]) >> 0) & 0x0F) + 48);
+ 283   5                                      }
+ 284   4                                      break;  //Ð´ÍêÍË³ö
+ 285   4                              }
+ 286   3                      }
+ 287   2      
+ 288   2                      i = pos_number; file_number = 0;
+ 289   2                      while(i)
+ 290   2                      {
+ 291   3                              iap_write((pos_mod[pos_number-i])++, 0x00);
+ 292   3                              iap_write((pos_mod[pos_number-i])++, 0x00);
+ 293   3                              while(write_buff[file_number])
+ 294   3                              {
+ 295   4                                      if(file_number > 508)   //ÊÂÊµÉÏ²»¿ÉÄÜ´óÓÚ508
+ 296   4                                      {
+ 297   5                                              break;
+ 298   5                                      }
+ 299   4                                      iap_write((pos_mod[pos_number-i])++, write_buff[file_number]);
+ 300   4                                      file_number ++;
+ 301   4                              }
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 6   
+
+ 302   3                              iap_write((pos_mod[pos_number-i])++, 0x00);     //ÎÄ¼þµÄ½áÎ²Ð´Èë¿Õ×Ö·û£¬´ú±íÎÄ¼þµÄ½áÊø
+ 303   3                              i --;   //Ð´Èë¿éÊýÁ¿¼õÒ»
+ 304   3                      }
+ 305   2                      printf("\r\n");
+ 306   2              }
+ 307   1              else
+ 308   1              {
+ 309   2                      printf("Alloc space failed\r\n");
+ 310   2              }
+ 311   1      EXIT_CRITICAL;  //Ð´ÍêÍË³öÁÙ½ç¶Î
+ 312   1      }
+ 313          
+ 314          /* 
+ 315           * ÎÄ¼þ¶Áº¯Êý£¬°üÀ¨Òª¶ÁµÄµØÖ·ÒÔ¼°Òª¶ÁµÄ³¤¶È
+ 316           * Àý£ºfs_read(0x5000, 20, str); ´Ó0x5000µØÖ·¿ªÊ¼¶Á20×Ö½Ú³¤¶ÈÊý¾Ý·ÅÔÚstrÀïÃæ
+ 317           */
+ 318          void fs_read(unsigned char *name)
+ 319          {
+ 320   1              xdata unsigned int ptr_mod;
+ 321   1              xdata unsigned int i = 0;
+ 322   1              xdata unsigned char str_mod = 0;
+ 323   1              xdata unsigned int next_ptr_mod = 0;
+ 324   1      
+ 325   1              ptr_mod = fs_struct_ptr; 
+ 326   1              while(1)
+ 327   1              {
+ 328   2                      /* ²éÕÒ²¢·µ»ØÎÄ±¾ÎÄ¼þµÄµØÖ· */
+ 329   2                      if(ptr_mod = find_file(ptr_mod, name, 1))
+ 330   2                      {
+ 331   3                              /* ÅÐ¶ÏÊÇ·ñÊÇÎÄ±¾ÎÄ¼þ */
+ 332   3                              if(iap_read(ptr_mod) & 0x02)
+ 333   3                              {
+ 334   4                                      printf("It not a text file\r\n");
+ 335   4                                      return;
+ 336   4                              }
+ 337   3                              else
+ 338   3                              {       
+ 339   4                                      ptr_mod = ptr_mod + FS_FLAG_SIZE + FS_NAME_SIZE + FS_SIZE_SIZE + FS_PREV_SIZE + FS_NEXT_SIZE;
+ 340   4                                      /* ²éÕÒ²¢ÇÒ´òÓ¡ÎÄ±¾ */
+ 341   4                                      for(i = 0; i < FS_NODE_SIZE; i += 2)
+ 342   4                                      {
+ 343   5                                              if(iap_read(ptr_mod + i) == 0xFF)
+ 344   5                                              {
+ 345   6                                                      return; //Óöµ½FFËµÃ÷ÎÄ±¾ÒÑ¾­²éÕÒÍê±Ï
+ 346   6                                              }
+ 347   5                                              else
+ 348   5                                              {
+ 349   6                                                      next_ptr_mod = iap_read(ptr_mod + i + 1);       //¶Á¸ß×Ö½Ú·ÅÈëptr_mod
+ 350   6                                                      next_ptr_mod = next_ptr_mod << 8;                                       //×óÒÆ8Î»£¬·ÅÈëptr_mod¸ß×Ö½Ú
+ 351   6                                                      next_ptr_mod |= iap_read(ptr_mod + i);          //¶ÁµÍ×Ö½Ú·ÅÈëptr_modµÍ8Î»
+ 352   6                                                      
+ 353   6                                                      ENTER_CRITICAL; //ÐèÒª³¤Ê±¼äÖ´ÐÐµÄ³ÌÐòÒªÏÈ½øÈëÁÙ½ç¶Î
+ 354   6                                                      ptr_mod = ptr_mod + FS_FLAG_SIZE; //Ìø¹ýÎÄ¼þÀàÐÍµÄ¶ÁÈ¡£¬ÎÄ±¾ÎÄ¼þÀïÃæ´æ´¢µÄÒ»¶¨ÊÇÎÄ±¾
+ 355   6                                                      while(str_mod = iap_read(ptr_mod))
+ 356   6                                                      {
+ 357   7                                                              putchar(str_mod);       //´òÓ¡³öÀ´ÆäÖÐµÄÎÄ±¾ÎÄ¼þ£¬Ö±µ½Óöµ½ÎÄ±¾½áÊø·ûÎªÖ¹
+ 358   7                                                              ptr_mod ++;
+ 359   7                                                      }
+ 360   6      
+ 361   6                                                      EXIT_CRITICAL;  //Ð´ÍêÍË³öÁÙ½ç¶Î                        
+ 362   6                                              }
+ 363   5                                      }//End for
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 7   
+
+ 364   4                              }
+ 365   3                      }
+ 366   2                      else
+ 367   2                      {
+ 368   3                              printf("No such file\r\n");
+ 369   3                              return;
+ 370   3                      }
+ 371   2              }
+ 372   1      }
+ 373          
+ 374          /* 
+ 375           * ÐÂ½¨ÎÄ¼þ¼Ð»òÕßÎÄ¼þ
+ 376           * Àý£ºcreate_dir("/", 0x5000, 0x5000, NORMAL_DIR_TYPE);        
+ 377           * ÔÚ0x5000´¦½¨Á¢Ò»¸öÐÂµÄÎÄ¼þ¼Ð£¬Ãû×ÖÎª"/"£¬ÉÏÒ»¸ö½á¹¹ÌåµØÖ·Îª0x5000£¬Ò²¾ÍÊÇ×Ô¼º,´ËÎÄ¼þ¼ÐÊÇÕû¸ö¸ùÎÄ¼þÏµÍ³µ
+             -Ä¸ùÄ¿Â¼
+ 378           * 
+ 379           * 
+ 380           */
+ 381          unsigned char create_dir_file(unsigned char *name, unsigned int addr, unsigned int prev_addr, unsigned cha
+             -r flag)
+ 382          {
+ 383   1              xdata unsigned int i = 0;       
+ 384   1              
+ 385   1              /* ËµÃ÷ÒÑ¾­ÓÐÁËÒ»¸öÍ¬ÃûÎÄ¼þ */
+ 386   1              if(find_file(prev_addr, name, 1))
+ 387   1              {
+ 388   2                      return 1;
+ 389   2              }
+ 390   1      
+ 391   1              /* Èç¹û²»µÈ£¬¾Í±íÃ÷²»ÊÇ¸ùÎÄ¼þ */
+ 392   1              if(addr != prev_addr)
+ 393   1              {
+ 394   2                      /* Ìø¹ýËùÓÐ²»ÐèÒªÉèÖÃµÄ */
+ 395   2                      prev_addr = prev_addr + FS_FLAG_SIZE + FS_NAME_SIZE + FS_SIZE_SIZE + FS_PREV_SIZE + FS_NEXT_SIZE;
+ 396   2                      
+ 397   2                      /* ²éÕÒ¿ÕµÄnode½Úµã */
+ 398   2                      for(i = 0; i < FS_NODE_SIZE; i += 2)
+ 399   2                      {
+ 400   3                              if(iap_read(prev_addr + i) == 0xFF)
+ 401   3                              {
+ 402   4                                      iap_write(prev_addr + i, addr % 256);           //ÏÈÐ´µÍµØÖ·
+ 403   4                                      iap_write(prev_addr + i + 1, addr / 256);       //ÔÙÐ´¸ßµØÖ·
+ 404   4      //                              fs_struct_ptr = addr;
+ 405   4                                      i = 0;
+ 406   4                                      prev_addr = prev_addr - FS_FLAG_SIZE - FS_NAME_SIZE - FS_SIZE_SIZE - FS_PREV_SIZE - FS_NEXT_SIZE;
+ 407   4                                      goto create_new;
+ 408   4                              }
+ 409   3                      }
+ 410   2      
+ 411   2                      return 1;       //·µ»Ø1±íÊ¾´´½¨Ê§°Ü£¬Ã»ÓÐ×ã¹»µÄ¿Õ¼äÁË
+ 412   2              }
+ 413   1      
+ 414   1      create_new:     
+ 415   1              iap_write(addr, flag);
+ 416   1              iap_write(addr + 1, 0x00);
+ 417   1              addr += FS_FLAG_SIZE;   //Ìø¹ýflag
+ 418   1              
+ 419   1              while(*name)
+ 420   1              {
+ 421   2                      iap_write(addr+i, *name++);
+ 422   2                      i ++;
+ 423   2              }
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 8   
+
+ 424   1              iap_write(addr+i, '\0');        //ÔÚ½áÎ²Ìí¼Ó×Ö´®½áÊø·û
+ 425   1              i = 0;
+ 426   1      
+ 427   1              addr += FS_NAME_SIZE;           //Ð´ÍêÎÄ¼þ¼ÐµÄÃû×Ö
+ 428   1              addr += FS_SIZE_SIZE;           //Ìø¹ýÎÄ¼þ´óÐ¡Ñ¡Ïî
+ 429   1      
+ 430   1              /* Ð´ÉÏÒ»¸ö½á¹¹ÌåµØÖ·£¬ÏÈÐ´µÍµØÖ·ºóÐ´¸ßµØÖ·£¬ÓÃÀ´·µ»ØÉÏÒ»²ãÎÄ¼þ¼Ð */
+ 431   1              iap_write(addr, prev_addr % 256);
+ 432   1              iap_write(addr + 1, prev_addr / 256);
+ 433   1              addr += FS_PREV_SIZE;           //Ð´Íê´Ë½á¹¹ÌåµÄÉÏÒ»¸ö½á¹¹ÌåµØÖ·
+ 434   1      
+ 435   1      /*      Éè¼Æ×îÖÕ²»ÐèÒª¹¹½¨³ÉË«ÏòÁ´±íµÄÐÎÊ½£¬Òò´ËÏÂÃæµÄ¶¼±»×¢ÊÍµôÁË£¬Ò»¸öÐÂµÄÎÄ¼þÊÇÃ»ÓÐ×Ónode½ÚµãµÄ      
+ 436   1      //       ÓÉÓÚÐÂ½¨µÄ½á¹¹ÌåÊ¼ÖÕ²»»áÁ¢¿Ì¾ÍÓÐÏÂÒ»¸ö½á¹¹Ìå 
+ 437   1              iap_write(addr, 0x00);
+ 438   1              iap_write(addr + 1, 0x00);
+ 439   1              addr += FS_NEXT_SIZE;           //Ð´Íê´Ë½á¹¹ÌåµÄÏÂÒ»¸ö½á¹¹ÌåµØÖ·
+ 440   1      */
+ 441   1      
+ 442   1              return 0;
+ 443   1      }
+ 444          
+ 445          /* 
+ 446           * ÁÐ³öËùÑ¡ÖÐµÄÎÄ¼þ¼ÐÏÂÃæµÄËùÓÐÎÄ¼þ
+ 447           * Àý£ºlist_dir(0x5000); ÁÐ³ö0x5000Õâ¸ö¿éÏÂÃæËùÓÐµÄÎÄ¼þ
+ 448           * 
+ 449           */
+ 450          void list_file(unsigned int cur_f_ptr, unsigned char l_flag)
+ 451          {
+ 452   1              xdata unsigned int i = 0;
+ 453   1              xdata unsigned int ptr_mod = 0;
+ 454   1              xdata unsigned char name_mod = 0;       
+ 455   1              
+ 456   1              /* Ìø¹ýËùÓÐ²»ÐèÒª²éÕÒµÄ */
+ 457   1              cur_f_ptr = cur_f_ptr + FS_FLAG_SIZE + FS_NAME_SIZE + FS_SIZE_SIZE + FS_PREV_SIZE + FS_NEXT_SIZE;
+ 458   1              
+ 459   1              /* ²éÕÒ·Ç¿ÕµÄnode½Úµã */
+ 460   1              for(i = 0; i < FS_NODE_SIZE; i += 2)
+ 461   1              {
+ 462   2                      if(iap_read(cur_f_ptr + i) == 0xFF)
+ 463   2                      {
+ 464   3      //                      return;
+ 465   3                      }
+ 466   2                      else
+ 467   2                      {
+ 468   3                              ptr_mod = iap_read(cur_f_ptr + i + 1);  //¶Á¸ß×Ö½Ú·ÅÈëptr_mod
+ 469   3                              ptr_mod = ptr_mod << 8;                                 //×óÒÆ8Î»£¬·ÅÈëptr_mod¸ß×Ö½Ú
+ 470   3                              ptr_mod |= iap_read(cur_f_ptr + i);             //¶ÁµÍ×Ö½Ú·ÅÈëptr_modµÍ8Î»
+ 471   3      
+ 472   3                              if(l_flag)
+ 473   3                              {
+ 474   4                                      if(iap_read(ptr_mod) & 0x02)
+ 475   4                                      {
+ 476   5                                              printf("ÎÄ¼þ¼Ð\t");     //´ú±íÊÇÎÄ¼þ¼Ð
+ 477   5                                      }
+ 478   4                                      else
+ 479   4                                      {
+ 480   5                                              printf("ÎÄ±¾\t");       //´ú±íÊÇÎÄ±¾ÎÄ¼þ
+ 481   5                                      }
+ 482   4                                      if(iap_read(ptr_mod) & 0x20)
+ 483   4                                      {
+ 484   5                                              printf("¿É¶Á\t");       //´ú±íÊÇ¿É¶ÁµÄ
+ 485   5                                      }
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 9   
+
+ 486   4                                      else
+ 487   4                                      {
+ 488   5                                              printf("²»¿É¶Á\t");     //´ú±íÊÇ²»¿É¶ÁµÄ
+ 489   5                                      }
+ 490   4                                      if(iap_read(ptr_mod) & 0x10)
+ 491   4                                      {
+ 492   5                                              printf("¿ÉÐ´\t");       //´ú±íÊÇ¿ÉÐ´µÄ
+ 493   5                                      }
+ 494   4                                      else
+ 495   4                                      {
+ 496   5                                              printf("²»¿ÉÐ´\t");     //´ú±íÊÇ²»¿ÉÐ´µÄ
+ 497   5                                      }
+ 498   4                                      if(iap_read(ptr_mod) & 0x08)
+ 499   4                                      {
+ 500   5                                              printf("¿ÉÉ¾\t");       //´ú±íÊÇ¿ÉÉ¾³ýµÄ
+ 501   5                                      }
+ 502   4                                      else
+ 503   4                                      {
+ 504   5                                              printf("²»¿ÉÉ¾\t");     //´ú±íÊÇ²»¿ÉÉ¾³ý
+ 505   5                                      }
+ 506   4                                      putchar((ptr_mod >> 12) + 48);
+ 507   4                                      putchar(((ptr_mod >> 8) & 0x0F) + 48);
+ 508   4                                      putchar(((ptr_mod >> 4) & 0x0F) + 48);
+ 509   4                                      putchar(((ptr_mod >> 0) & 0x0F) + 48);
+ 510   4      
+ 511   4                                      printf("\t\t");
+ 512   4                              }
+ 513   3      
+ 514   3                              ptr_mod = ptr_mod + FS_FLAG_SIZE;               //Ìø¹ýÎÄ¼þÀàÐÍµÄ¶ÁÈ¡                    
+ 515   3                              while(name_mod = iap_read(ptr_mod++))   //×Ö´®·Ç¿Õ¾ÍÒ»Ö±¶ÁÈ¡Ãû×Ö´æ·Åµ½Êý×é»º³åÇøÖÐ
+ 516   3                              {
+ 517   4                                      putchar(name_mod);                      //´òÓ¡³öÃû×Ö×Ö·û´®
+ 518   4                              }                                       
+ 519   3      
+ 520   3                              name_mod = 0;   //ÇåÁã£¬µÈ´ýÏÂÒ»´Î²éÕÒ
+ 521   3                              if(l_flag)
+ 522   3                              {
+ 523   4                                      printf("\r\n"); //Ö±½Ó»»ÐÐ
+ 524   4                              }
+ 525   3                              else
+ 526   3                              {
+ 527   4                                      printf("\t\t"); //»»µ½ÏÂÒ»¸ö¶ÔÆë´¦
+ 528   4                              }
+ 529   3                      }
+ 530   2              }
+ 531   1      }
+ 532          
+ 533          /* 
+ 534           * ÇÐ»»ÎÄ¼þ¼ÐµÄÄ¿Â¼
+ 535           * Àý£ºchange_dir("test"); ÇÐ»»µ½µ±Ç°Ä¿Â¼ÏÂµÄtestÄ¿Â¼ÖÐÈ¥
+ 536           * 
+ 537           */
+ 538          unsigned char change_dir(unsigned char *name)
+ 539          {
+ 540   1              xdata unsigned int ptr_mod = 0;
+ 541   1              xdata unsigned int prev_ptr_mod = 0;
+ 542   1              
+ 543   1              ptr_mod = fs_struct_ptr;
+ 544   1              
+ 545   1              if(!os_strcmp("..", name))      //·µ»ØÉÏÒ»¼¶ÎÄ¼þ¼Ð
+ 546   1              {
+ 547   2                      goto exit2last_dir;
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 10  
+
+ 548   2              }
+ 549   1              else if(!os_strcmp("../", name))  //·µ»ØÉÏÒ»¼¶ÎÄ¼þ¼Ð
+ 550   1              {
+ 551   2                      goto exit2last_dir;
+ 552   2              }
+ 553   1              else if(!os_strcmp("/", name))   //·µ»Ø¸ùÄ¿Â¼
+ 554   1              {
+ 555   2                      fs_struct_ptr = FS_BEGIN;
+ 556   2                      return 0;
+ 557   2              }
+ 558   1              else
+ 559   1              {
+ 560   2                      /* Èç¹ûÕÒµ½µÄ»°¾Í½øÐÐÎÄ¼þ¼ÐµÄÇÐ»» */
+ 561   2                      if(ptr_mod = find_file(ptr_mod, name, 1))
+ 562   2                      {
+ 563   3                              if(iap_read(ptr_mod) & 0x02)
+ 564   3                              {
+ 565   4                                      fs_struct_ptr = ptr_mod;
+ 566   4                                      return 0;
+ 567   4                              }
+ 568   3                              else
+ 569   3                              {
+ 570   4                                      printf("Not a dir, but a text file\r\n");
+ 571   4                                      return 1;
+ 572   4                              }
+ 573   3                              
+ 574   3                      }               
+ 575   2                      printf("No such dir\r\n");
+ 576   2                      return 1;
+ 577   2              }
+ 578   1      
+ 579   1      exit2last_dir:
+ 580   1              ptr_mod = ptr_mod + FS_FLAG_SIZE + FS_NAME_SIZE + FS_SIZE_SIZE;
+ 581   1              prev_ptr_mod = iap_read(ptr_mod + 1);
+ 582   1              prev_ptr_mod = prev_ptr_mod << 8;
+ 583   1              prev_ptr_mod |= iap_read(ptr_mod);
+ 584   1              fs_struct_ptr = prev_ptr_mod;
+ 585   1      
+ 586   1      return 0;
+ 587   1      }
+ 588          
+ 589          /* 
+ 590           * ÎÄ¼þµÄÉ¾³ý
+ 591           * Àý£ºdelete_file("123"); //É¾³ýµ±Ç°ÎÄ¼þ¼ÐÏÂÃû×ÖÎª123µÄÎÄ¼þ
+ 592           * 
+ 593           */
+ 594          unsigned char delete_file(unsigned char *name)
+ 595          {
+ 596   1              xdata unsigned int ptr_mod = 0;
+ 597   1              xdata unsigned int next_file_ptr = 0;
+ 598   1              xdata unsigned int file_ptr = 0;
+ 599   1              xdata unsigned int i = 0;
+ 600   1              xdata unsigned int count = 0;
+ 601   1              
+ 602   1              ptr_mod = fs_struct_ptr;
+ 603   1              
+ 604   1              if(ptr_mod = find_file(ptr_mod, name, 1))
+ 605   1              {
+ 606   2                      
+ 607   2                      if(!(iap_read(ptr_mod) & 0x08))
+ 608   2                      {
+ 609   3                              printf("Permition denied\r\n");
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 11  
+
+ 610   3                              return 1;
+ 611   3                      }
+ 612   2                      else
+ 613   2                      {
+ 614   3                              /* ÅÐ¶ÏÊÇ·ñÊÇÎÄ¼þ¼Ð */
+ 615   3                              if(iap_read(ptr_mod) & 0x02)
+ 616   3                              {
+ 617   4                                      if(find_file(ptr_mod, "*", 1))  //Èç¹ûÊÇÎÄ¼þ¼ÐµÄ»°£¬ÀïÃæÊÇ·ñÓÐÎÄ¼þ
+ 618   4                                      {
+ 619   5                                              printf("There are files in this folder, please delete them first\r\n");
+ 620   5                                              return 1;       //ÓÐÎÄ¼þ£¬·µ»ØÉ¾³ý´íÎó
+ 621   5                                      }
+ 622   4                                      else
+ 623   4                                      {
+ 624   5                                              file_ptr = ptr_mod;
+ 625   5                                              ptr_mod = find_file(fs_struct_ptr, name, 0);    //ÕÒµ½Õâ¸ö½á¹¹ÌåÖÐÏàÓ¦µÄnode½ÚµãµÄÎ»ÖÃ
+ 626   5                                              /* °ÑÔ­À´µÄÎÄ¼þ±êÖ¾»º´æÆðÀ´ */
+ 627   5                                              for(i = 0; i < FS_NEED_KEEP; i ++)
+ 628   5                                              {
+ 629   6                                                      if(i == (ptr_mod + 28))
+ 630   6                                                      {
+ 631   7                                                              /* ½«¸Õ¸ÕÉ¾³ýµÄÎÄ¼þnode½Úµã²Á³ý */
+ 632   7                                                              erase_return_buff[i] = 0xFF;
+ 633   7                                                              i ++;
+ 634   7                                                              erase_return_buff[i] = 0xFF;
+ 635   7                                                      }
+ 636   6                                                      else
+ 637   6                                                      {
+ 638   7                                                              erase_return_buff[i] = iap_read(fs_struct_ptr + i);
+ 639   7                                                      }
+ 640   6                                              }                                       
+ 641   5                                              iap_erase(fs_struct_ptr);  //²Á³ýµ±Ç°ÎÄ¼þ¼ÐÏÂÃæµÄÉÈÇø
+ 642   5                                              for(i = 0; i < FS_NEED_KEEP; i ++)
+ 643   5                                              {
+ 644   6                                                      iap_write(fs_struct_ptr + i, erase_return_buff[i]);
+ 645   6                                              }
+ 646   5      
+ 647   5                                              printf("\r\n");
+ 648   5      
+ 649   5                                              iap_erase(file_ptr);    //²Á³ýÎÄ¼þ¿éÉÈÇø
+ 650   5      
+ 651   5                                              return 0;
+ 652   5                                      }
+ 653   4                              }
+ 654   3                              else    //´ËÎÄ¼þ¿éÊÇÒ»¸öÎÄ±¾ÎÄ¼þ
+ 655   3                              {
+ 656   4                                      ptr_mod = ptr_mod + FS_FLAG_SIZE + FS_NAME_SIZE + FS_SIZE_SIZE + FS_PREV_SIZE + FS_NEXT_SIZE;
+ 657   4                                      /* ²éÕÒ²¢ÇÒÉ¾³ýÎÄ¼þ¿é */
+ 658   4                                      for(i = 0; i < FS_NODE_SIZE; i += 2)
+ 659   4                                      {
+ 660   5                                              if(iap_read(ptr_mod + i) == 0xFF)
+ 661   5                                              {
+ 662   6                                                      break;  //Óöµ½FFËµÃ÷ÎÄ±¾ÒÑ¾­²éÕÒÍê±Ï
+ 663   6                                              }
+ 664   5                                              else
+ 665   5                                              {
+ 666   6                                                      next_file_ptr = iap_read(ptr_mod + i + 1);      //¶Á¸ß×Ö½Ú·ÅÈëptr_mod
+ 667   6                                                      next_file_ptr = next_file_ptr << 8;                                     //×óÒÆ8Î»£¬·ÅÈëptr_mod¸ß×Ö½Ú
+ 668   6                                                      next_file_ptr |= iap_read(ptr_mod + i);         //¶ÁµÍ×Ö½Ú·ÅÈëptr_modµÍ8Î»
+ 669   6                                                      
+ 670   6                                                      ENTER_CRITICAL; //ÐèÒª³¤Ê±¼äÖ´ÐÐµÄ³ÌÐòÒªÏÈ½øÈëÁÙ½ç¶Î
+ 671   6      //                                              putchar((next_file_ptr >> 12) + 48);
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 12  
+
+ 672   6      //                                              putchar(((next_file_ptr >> 8) & 0x0F) + 48);
+ 673   6      //                                              putchar(((next_file_ptr >> 4) & 0x0F) + 48);
+ 674   6      //                                              putchar(((next_file_ptr >> 0) & 0x0F) + 48);
+ 675   6                                                      iap_erase(next_file_ptr);       //²Á³ýÎÄ¼þ¿é
+ 676   6                                                      EXIT_CRITICAL;  //Ð´ÍêÍË³öÁÙ½ç¶Î                        
+ 677   6                                              }
+ 678   5                                      }//End for
+ 679   4      
+ 680   4                                      ENTER_CRITICAL; //ÐèÒª³¤Ê±¼äÖ´ÐÐµÄ³ÌÐòÒªÏÈ½øÈëÁÙ½ç¶Î
+ 681   4                                      file_ptr = find_file(fs_struct_ptr, name, 1);   //ÕÒµ½Õâ¸ö½á¹¹ÌåÖÐÏàÓ¦µÄÎÄ¼þµÄÎ»ÖÃ
+ 682   4      
+ 683   4                                      ptr_mod = find_file(fs_struct_ptr, name, 0);    //ÕÒµ½Õâ¸ö½á¹¹ÌåÖÐÏàÓ¦µÄnode½ÚµãµÄÎ»ÖÃ
+ 684   4      //                              putchar((ptr_mod >> 12) + 48);
+ 685   4      //                              putchar(((ptr_mod >> 8) & 0x0F) + 48);
+ 686   4      //                              putchar(((ptr_mod >> 4) & 0x0F) + 48);
+ 687   4      //                              putchar(((ptr_mod >> 0) & 0x0F) + 48);
+ 688   4                                      /* °ÑÔ­À´µÄÎÄ¼þ±êÖ¾»º´æÆðÀ´ */
+ 689   4                                      for(i = 0; i < FS_NEED_KEEP; i ++)
+ 690   4                                      {
+ 691   5                                              if(i == (ptr_mod + 28))
+ 692   5                                              {
+ 693   6                                                      /* ½«¸Õ¸ÕÉ¾³ýµÄÎÄ¼þnode½Úµã²Á³ý */
+ 694   6                                                      erase_return_buff[i] = 0xFF;
+ 695   6                                                      i ++;
+ 696   6                                                      erase_return_buff[i] = 0xFF;
+ 697   6                                              }
+ 698   5                                              else
+ 699   5                                              {
+ 700   6                                                      erase_return_buff[i] = iap_read(fs_struct_ptr + i);
+ 701   6                                              }
+ 702   5                                      }                                       
+ 703   4                                      iap_erase(fs_struct_ptr);  //²Á³ýµ±Ç°ÎÄ¼þ¼ÐÏÂÃæµÄÉÈÇø
+ 704   4                                      for(i = 0; i < FS_NEED_KEEP; i ++)
+ 705   4                                      {
+ 706   5                                              iap_write(fs_struct_ptr + i, erase_return_buff[i]);
+ 707   5                                      }
+ 708   4      
+ 709   4      //                              putchar((file_ptr >> 12) + 48);
+ 710   4      //                              putchar(((file_ptr >> 8) & 0x0F) + 48);
+ 711   4      //                              putchar(((file_ptr >> 4) & 0x0F) + 48);
+ 712   4      //                              putchar(((file_ptr >> 0) & 0x0F) + 48);
+ 713   4                                      iap_erase(file_ptr);    //É¾³ý´ËÎÄ¼þÔÚµ±Ç°ÎÄ¼þ¼ÐÏÂµÄ¼ÇÂ¼
+ 714   4                                      EXIT_CRITICAL;  //Ð´ÍêÍË³öÁÙ½ç¶Î
+ 715   4                              }
+ 716   3                              return 0;                       
+ 717   3                      }               
+ 718   2              }
+ 719   1      
+ 720   1              printf("No such file or dir\r\n");
+ 721   1              return 1;
+ 722   1      }
+ 723          #endif
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   5430    ----
+   CONSTANT SIZE    =    422    ----
+   XDATA SIZE       =   1120      75
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      34
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.02   FS                                                                    03/26/2016 11:01:23 PAGE 13  
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

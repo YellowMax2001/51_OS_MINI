@@ -1,0 +1,410 @@
+C51 COMPILER V9.02   CORE                                                                  03/26/2016 10:28:04 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE CORE
+OBJECT MODULE PLACED IN .\core.obj
+COMPILER INVOKED BY: D:\msprograms\keil4\C51\BIN\C51.EXE ..\src\core.c OPTIMIZE(2,SPEED) BROWSE INCDIR(../head;../board/
+                    -head) DEBUG OBJECTEXTEND PRINT(.\core.lst) OBJECT(.\core.obj)
+
+line level    source
+
+   1          #include "core.h"
+   2          
+   3          /* ÉêÇëÈÎÎñ¿ØÖÆÄ£¿é½á¹¹ÌåÊı×é£¬´æ´¢ËùÓĞÈÎÎñµÄ¿ØÖÆ½á¹¹Ìå */
+   4          struct task_pcb xdata task_pcb_buf[TASK_MAX];
+   5          
+   6          #ifdef XDATA_SP_BUFFER
+   7          /* ÈÎÎñ¶ÑÕ»Êı×é£¨Î±¶ÑÕ»£¬Êµ¼Ê¶ÑÕ»Ö»ÄÜ·ÅÔÚidataÀïÃæ£© */
+   8          volatile unsigned char xdata task_sp[TASK_MAX][SP_DEEP];
+   9          /* ÈÎÎñ¶ÑÕ»¿Õ¼ä£¬ËùÓĞÈÎÎñ¹²ÓÃÍ¬Ò»¸ö¶ÑÕ»¿Õ¼ä */
+  10          volatile unsigned char idata task_sp_public[PUBLIC_SP_DEEP];
+  11          unsigned char idata task_sp_bottom;     //Õ»¿Õ¼äµÄµ×²¿
+  12          #endif
+  13          #ifdef IDATA_SP_BUFFER
+              /* ÈÎÎñ¶ÑÕ»Êı×é */
+              volatile unsigned char idata task_sp[TASK_MAX][SP_DEEP];
+              #endif
+  17          
+  18          /* µ±Ç°ÏµÍ³ÕıÔÚÔËĞĞµÄÈÎÎñÊı */
+  19          xdata unsigned char task_running = 0;
+  20          /* ÕıÔÚÔËĞĞÈÎÎñµÄid£¬³õÊ¼»¯Îª0£¬Ä¬ÈÏ×î¿ªÊ¼ÔËĞĞ0ºÅÈÎÎñ */
+  21          xdata unsigned char current_id = 0;
+  22          /* ÈÎÎñÔËĞĞ±êÖ¾£¬Öµ·´Ó³ÁËÓĞ¶àÉÙÈÎÎñÕıÔÚÔËĞĞ */
+  23          xdata unsigned long task_run_flag = 0;
+  24          /* Í³¼Æ½øÈëÁÙ½çÕ»µÄ´ÎÊı */
+  25          xdata unsigned int critical_counter = 0;
+  26          /* ´Ó¿ª»úµ½ÏÖÔÚÈÎÎñÔËĞĞÊ±¼ä£¬µ¥Î»10ms */
+  27          xdata unsigned long task_runtime = 0;
+  28          /* ´®¿Ú½ÓÊÕÊı¾İ»º³åÇø£¬³¤¶ÈÎª256¸ö×Ö½Ú */
+  29          xdata unsigned char reve_buff[256];
+  30          xdata unsigned char cmd_split[10][20];
+  31          /* ÉèÖÃÏµÍ³ÔËĞĞ±êÖ¾£¬1ÎªÕıÔÚÔËĞĞ£¬0ÎªÎ´¿ªÊ¼ÔËĞĞ¡£³õÊ¼»¯Îª0 */
+  32          bit task_start_flag = 0;
+  33          
+  34          //void pop_ptr(void)
+  35          //{
+  36          //      #pragma asm
+  37          //              POP 7
+  38          //              POP 6
+  39          //              POP 5
+  40          //              POP 4
+  41          //              POP 3
+  42          //              POP 2
+  43          //              POP 1
+  44          //              POP 0
+  45          //              POP PSW
+  46          //              POP DPH
+  47          //              POP DPL
+  48          //              POP B
+  49          //              POP ACC
+  50          //      #pragma endasm
+  51          //}
+  52          
+  53          /* ÏµÍ³ÑÓÊ±,µ¥Î»ms */
+  54          void OS_delay(unsigned int ms)
+C51 COMPILER V9.02   CORE                                                                  03/26/2016 10:28:04 PAGE 2   
+
+  55          {
+  56   1              ms = ms / 10;   
+  57   1              task_delay(ms);
+  58   1      
+  59   1              while(task_pcb_buf[current_id].delay);
+  60   1      }
+  61          
+  62          /* ÏµÍ³¿ª»ú³õÊ¼»¯ */
+  63          void OS_init(void)
+  64          {
+  65   1              unsigned int i = 0;
+  66   1      
+  67   1              current_id = 0;                 //µ±Ç°ÔËĞĞÈÎÎñºÅÎª0
+  68   1              task_run_flag = 0;              //µ±Ç°ÎŞÈÎÎñÔËĞĞ
+  69   1              task_runtime = 0;               //µ±Ç°ÔËĞĞÊ±¼äÎª0
+  70   1              task_start_flag = 0;    //ÏµÍ³Î´¿ªÊ¼ÔËĞĞ
+  71   1              
+  72   1              /* ÈÎÎñÔËĞĞÊ±¼äÈ«²¿ÇåÁã */
+  73   1              for(i = 0; i < TASK_MAX; i ++)
+  74   1              {
+  75   2                      task_pcb_buf[i].run_time = 0;
+  76   2                      task_pcb_buf[i].delay  = 0;
+  77   2              }       
+  78   1      }
+  79          
+  80          /* ÏµÍ³¿ªÊ¼ÈÎÎñµ÷¶È */
+  81          void OS_start(void)
+  82          {
+  83   1      #ifdef XDATA_SP_BUFFER
+  84   1              task_sp_bottom = task_sp_public;        //½«³ÌĞòÊµ¼ÊÔËĞĞµÄÕ»¿Õ¼äÆğÊ¼µØÖ·´«¸øÕ»µ×Ôİ´æ±äÁ¿
+  85   1      
+  86   1              task_sp_public[0] = task_sp[current_id][0];      //¿ªÊ¼½øÈëÈÎÎñÇĞ»»ÖĞ¶Ï·şÎñº¯ÊıµÄÊ±ºò°ÑÏÂÒ»²½¸ÃÔËĞĞµÄº¯ÊıµÄµØ
+             -Ö·
+  87   1              task_sp_public[1] = task_sp[current_id][1];      //¸ß°ËÎ»ÓëµÍ°ËÎ»´æµ½Õ»¿Õ¼äÖĞ
+  88   1      
+  89   1              SP = task_sp_public;    //°ÑÕ»¿Õ¼äÆğÊ¼µØÖ·¸³Öµ¸øSPÖ¸Õë
+  90   1              SP = SP + 1;                    //SPÖ¸Õë¼ÓÒ»£¬Ö¸Ïòº¯ÊıµØÖ·µÄ¸ß°ËÎ»£¬¿ªÊ¼ÔËĞĞ£¨51µÄÕ»Éú³¤·½ÏòÊÇ³¯×ÅµØÖ·Ôö¼ÓµÄ·½ÏòÉú³¤µÄ£
+             -©
+  91   1              TR1 = 1;                                                                                  //¿ªÊ¼¼ÆÊ±
+  92   1              ET1 = 1;                                                                                  //Ê¹ÄÜ¶¨Ê±Æ÷1
+  93   1              EA  = 1;                                                                                  //¿ªÈ«¾ÖÖĞ¶Ï
+  94   1      #endif
+  95   1      #ifdef IDATA_SP_BUFFER
+                      task_pcb_buf[current_id].sp -= NUM_PTR_NOPC;
+              
+                      SP = task_pcb_buf[current_id].sp;
+                      TR1 = 1;                                                                                  //¿ªÊ¼¼ÆÊ±
+                      ET1 = 1;                                                                                  //Ê¹ÄÜ¶¨Ê±Æ÷1
+                      EA  = 1;                                                                                  //¿ªÈ«¾ÖÖĞ¶Ï
+              #endif
+ 103   1              
+ 104   1      }
+ 105          
+ 106          /* É±µôÒ»¸öÈÎÎñ */
+ 107          unsigned char task_kill(unsigned char pid)
+ 108          {
+ 109   1              ENTER_CRITICAL;         //½øÈëÁÙ½çÕ»£¬ÒÔÃâÔÚÖ´ĞĞµÄ¹ı³ÌÖĞ±»ÖĞ¶Ï
+ 110   1              if(task_run_flag & (1 << pid))
+ 111   1              {
+ 112   2                      task_run_flag &= ~(1 << pid);   
+ 113   2      
+ 114   2              }
+C51 COMPILER V9.02   CORE                                                                  03/26/2016 10:28:04 PAGE 3   
+
+ 115   1              else
+ 116   1              {
+ 117   2                      goto error;
+ 118   2              }
+ 119   1              task_running --;        //µ±Ç°ÏµÍ³ÕıÔÚÔËĞĞµÄÈÎÎñÊı¼õ1
+ 120   1              EXIT_CRITICAL;          //ÍË³öÁÙ½çÕ»£¬ÈÎÎñ¼ÌĞøÔËĞĞ
+ 121   1              return 0;       
+ 122   1      error:          
+ 123   1              EXIT_CRITICAL;          //ÍË³öÁÙ½çÕ»£¬ÈÎÎñ¼ÌĞøÔËĞĞ
+ 124   1              return 1;
+ 125   1      }
+ 126          
+ 127          /* ÈÎÎñÇĞ»»£¬ÓÃÔÚ¶¨Ê±Æ÷ÀïÃæ½øĞĞÈÎÎñµÄÇĞ»» £¨ÔİÊ±ÆúÓÃ£©*/
+ 128          void task_switch(void)
+ 129          {
+ 130   1              EA= 0;  //ÈÎÎñÇĞ»»µÄÊ±ºò²»ÔÊĞí±»ÖĞ¶Ï
+ 131   1              /* ±£´æ¼Ä´æÆ÷Öµ£¬¼Ä´æÆ÷ÖµÈëÕ» */
+ 132   1      //      push_ptr();
+ 133   1              /* °Ñ×ª»»Ö®Ç°ÈÎÎñµÄÕ»Ö¸Õë±£´æÔÚÊı×éÀïÃæ */
+ 134   1              task_pcb_buf[current_id].sp = SP;
+ 135   1      //      if(tasks_list
+ 136   1      
+ 137   1              /* ¼Ä´æÆ÷Öµ³öÕ»£¬»Ö¸´¼Ä´æÆ÷Öµ */
+ 138   1      //      pop_ptr();
+ 139   1              EA = 1; //ÈÎÎñÇĞ»»Íê³É£¬ÖØĞÂ¿ªÆôÖĞ¶Ï
+ 140   1      }
+ 141          
+ 142          /* ´´½¨ÈÎÎñ 
+ 143           * priority ÈÎÎñÓÅÏÈ¼¶
+ 144           * task_address ÈÎÎñµØÖ·
+ 145           * task_msg ÈÎÎñÏûÏ¢Ö¸Õë
+ 146           * name ÈÎÎñµÄÃû×Ö
+ 147           */
+ 148          unsigned char task_create(unsigned char priority, unsigned int task_address, unsigned char xdata *task_msg
+             -, unsigned char *name)
+ 149          {
+ 150   1              static xdata unsigned char i = 0;
+ 151   1              static xdata unsigned char stack_deep = 0;
+ 152   1              static unsigned char stack_p;
+ 153   1      
+ 154   1              ENTER_CRITICAL; //¶¯Ì¬´´½¨ÈÎÎñµÄÊ±ºò²»ÔÊĞí±»ÖĞ¶Ï£¬´ËÊ±Ó¦¸Ã½øÈëÁÙ½çÕ»
+ 155   1      
+ 156   1              for(i = 0; i < TASK_MAX; i ++)
+ 157   1              {
+ 158   2                      if(task_run_flag & (1 << i))
+ 159   2                              ;
+ 160   2                      else
+ 161   2                      {
+ 162   3      #ifdef XDATA_SP_BUFFER
+ 163   3                              /* ³õÊ¼»¯Çå¿Õ¶ÑÕ»Çø */
+ 164   3                              for(stack_deep = 0; stack_deep < SP_DEEP; stack_deep ++)
+ 165   3                                      task_sp[i][stack_deep] = 0;
+ 166   3                              
+ 167   3                              task_pcb_buf[i].sp = 14;        //³õÊ¼»¯Ñ¹ÈëÕ»ÖĞÊı¾İµÄ³¤¶ÈÎª14
+ 168   3                              task_sp[i][0] = task_address % 256;       //°ÑÈÎÎñµØÖ·µÍ8Î»ÈëÕ»
+ 169   3                              task_sp[i][1] = task_address >> 8;        //°ÑÈÎÎñµØÖ·¸ß8Î»ÈëÕ»
+ 170   3                              
+ 171   3                              task_pcb_buf[i].priority = priority;    //ÉèÖÃÈÎÎñµÄÓÅÏÈ¼¶
+ 172   3                              task_pcb_buf[i].msg              = task_msg;    //ÉèÖÃÈÎÎñµÄÏûÏ¢Ö¸Õë
+ 173   3                              task_pcb_buf[i].id       = name;
+ 174   3                              
+ 175   3                              task_run_flag |= (1 << i);              //°Ñ´ËÎ»ÉèÖÃÎªÓĞÈÎÎñ
+C51 COMPILER V9.02   CORE                                                                  03/26/2016 10:28:04 PAGE 4   
+
+ 176   3      #endif
+ 177   3      #ifdef IDATA_SP_BUFFER
+                                      stack_p = (unsigned char)task_sp[i];    //°Ñ¶ÑÕ»Ö¸ÕëµÄµØÖ·¸³Öµ¶ÑÕ»µØÖ·Ôİ´æÇø
+                                      /* ³õÊ¼»¯Çå¿Õ¶ÑÕ»Çø */
+                                      for(stack_deep = 0; stack_deep < SP_DEEP; stack_deep ++)
+                                              ((unsigned char idata *)stack_p)[stack_deep] = 0;
+                                      
+                                      task_pcb_buf[i].sp = stack_p;   //°Ñ¶ÑÕ»Ö¸Õë¸³Öµ¸øÈÎÎñ½á¹¹Ìå
+                                      ((unsigned char idata *)stack_p)[0] = task_address % 256;         //°ÑÈÎÎñµØÖ·µÍ8Î»ÈëÕ»
+                                      task_pcb_buf[i].sp ++;
+                                      ((unsigned char idata *)stack_p)[1] = task_address >> 8;          //°ÑÈÎÎñµØÖ·¸ß8Î»ÈëÕ»
+                                      
+                                      task_pcb_buf[i].sp += NUM_PTR_NOPC;             //½«ÈÎÎñ¶ÑÕ»Ö¸ÕëÖµÉèÎªÈÎÎñÇĞ»»Ê±µÄ×´Ì¬
+                                      task_pcb_buf[i].priority = priority;    //ÉèÖÃÈÎÎñµÄÓÅÏÈ¼¶
+                                      task_pcb_buf[i].msg              = task_msg;    //ÉèÖÃÈÎÎñµÄÏûÏ¢Ö¸Õë
+                                      task_pcb_buf[i].id       = name;
+                                      
+                                      task_run_flag |= (1 << i);              //°Ñ´ËÎ»ÉèÖÃÎªÓĞÈÎÎñ
+              #endif
+ 195   3                              
+ 196   3                              task_running ++;        //µ±Ç°ÏµÍ³ÕıÔÚÔËĞĞµÄÈÎÎñÊı¼Ó1
+ 197   3                              EXIT_CRITICAL;  //ÈÎÎñ´´½¨Íê±Ï£¬ÍË³öÁÙ½çÕ»
+ 198   3      
+ 199   3                              return 0;       //ÈÎÎñ´´½¨³É¹¦£¬·µ»Ø
+ 200   3                      }
+ 201   2              }
+ 202   1      
+ 203   1              EXIT_CRITICAL;          //ÈÎÎñ´´½¨Ê§°Ü£¬Ò²ÒªÍË³öÁÙ½çÕ»
+ 204   1              return 1;                       //×ÊÔ´²»×ã£¬ÎŞ·¨¼ÌĞø´´½¨ÈÎÎñ£¬·µ»Ø1
+ 205   1      }
+*** WARNING C280 IN LINE 152 OF ..\SRC\CORE.C: 'stack_p': unreferenced local variable
+ 206          
+ 207          
+ 208          /* ÖĞ¶Ï·şÎñº¯Êı£¬ÓÃ¶¨Ê±Æ÷1½øĞĞÈÎÎñµ÷¶È */
+ 209          void timer1_task_switch(void) interrupt 3
+ 210          {
+ 211   1              unsigned char xdata temp = 0;
+ 212   1              char sp_count = 0;
+ 213   1              
+ 214   1              EA = 0; //ÈÎÎñÇĞ»»µÄÊ±ºòÒª¹Ø±ÕÖĞ¶Ï
+ 215   1      
+ 216   1      /* ÕâÀïµÄ³ÌĞò²»ÓÃ£¬ÒòÎª±àÒëÆ÷±àÒëÖ®ºóµÄ½á¹ûÊÇ²»ĞèÒªÏÂÃæÕâ¶Î±»×¢ÊÍµÄÓï¾ä */
+ 217   1      //      if(!task_start_flag)    //µÚÒ»´Î½øÈëÖĞ¶Ï
+ 218   1      //      {
+ 219   1      //              SP = SP - NUM_PTR_NOPC; //´ËÊ±Ö¸ÕëÖ¸Ïòµ÷ÓÃ´ËÖĞ¶ÏÊ±ºòÑ¹ÈëµÄPCµÍµØÖ·
+ 220   1      //              for(temp = 1; temp < NUM_PTR_NOPC + 1; temp ++)
+ 221   1      //              {
+ 222   1      //                      ((unsigned char idata *)SP)[temp] = ((unsigned char idata *)SP)[temp + 2];      //½«³ıÁËPCÖ®ÍâµÄ¼Ä´æÆ÷ÖµÍù
+             -ÏÂÆ½ÒÆÁ½Î»
+ 223   1      //              }
+ 224   1      //              SP = SP + NUM_PTR_NOPC;
+ 225   1      //              task_start_flag = 1; //ÉèÖÃÏµÍ³ÔËĞĞ±êÖ¾£¬´ËÊ±ÎªÒÑ¾­ÔËĞĞ
+ 226   1      //      }
+ 227   1      
+ 228   1              /* ±£´æ¼Ä´æÆ÷Öµ£¬¼Ä´æÆ÷ÖµÈëÕ» */
+ 229   1      //      push_ptr();      /* ÔÚÏÖÓĞ±àÒë»·¾³ÏÂ¼Ä´æÆ÷ÒÑ¾­ÓÉÏµÍ³×Ô¶¯±£´æÁË */
+ 230   1              
+ 231   1              TF1 = 0;        //Çå³ıÖĞ¶Ï±êÖ¾
+ 232   1      #ifdef XDATA_SP_BUFFER
+ 233   1              /* ½«³ÌĞòÊµ¼ÊÔËĞĞµÄÕ»¿Õ¼ä²ÎÊıÖµ´æµ½xdataÇø */
+ 234   1              for(sp_count = 0; SP >= task_sp_bottom; SP--)
+ 235   1              {
+C51 COMPILER V9.02   CORE                                                                  03/26/2016 10:28:04 PAGE 5   
+
+ 236   2                      task_sp[current_id][sp_count] = ((unsigned char idata*)task_sp_bottom)[sp_count];
+ 237   2                      sp_count ++;
+ 238   2              }
+ 239   1              sp_count --;    //forÑ­»·ÍË³ö¼õÒ»
+ 240   1              /* °Ñ×ª»»Ö®Ç°ÈÎÎñµÄÕ»Ö¸Õë±£´æÔÚÆäÈÎÎñ½á¹¹ÌåÀïÃæ */
+ 241   1              task_pcb_buf[current_id].sp = sp_count;
+ 242   1      #endif
+ 243   1      #ifdef IDATA_SP_BUFFER
+                      /* °Ñ×ª»»Ö®Ç°ÈÎÎñµÄÕ»Ö¸Õë±£´æÔÚÆäÈÎÎñ½á¹¹ÌåÀïÃæ */
+                      task_pcb_buf[current_id].sp = SP;
+              #endif
+ 247   1      #if 0
+                      /* µÚÒ»°æ£¬ÈÎÎñÂÖÁ÷±»µ÷ÓÃ£¬²éÕÒ±¾´ÎÈÎÎñÖ®ºóµÄÈÎÎñ£¬ÓĞµÄ»°Ö±½ÓÌøµ½ T2_switch_exit ´¦Ö´ĞĞ*/
+                      for(temp = current_id + 1; temp < TASK_MAX; temp ++)
+                      {
+                              if(task_run_flag & (1 << temp))
+                              {
+                                      current_id = temp;
+                                      goto T2_switch_exit;                    
+                              }
+                      }
+              
+                      /* Ã»ÓĞÕÒµ½ÕıÔÚÔËĞĞÈÎÎñÖ®ºóµÄÈÎÎñ£¬·µ»ØÇ°Ãæ½øĞĞ²éÕÒ */
+                      for(temp = 0; temp < current_id + 1; temp ++)
+                      {
+                              if(task_run_flag & (1 << temp))
+                              {
+                                      current_id = temp;
+                                      goto T2_switch_exit;    
+                              }
+                              else
+                                      goto T2_switch_exit;
+                      }
+              #endif
+ 270   1              //½«×îµÍÓÅÏÈ¼¶µÄid¸³Öµ¸øÕıÔÚÔËĞĞµÄidºÅ
+ 271   1              current_id = 0;
+ 272   1              //ÈÎÎñidµÄÇĞ»»
+ 273   1              for(temp = 1; temp < TASK_MAX; temp ++)
+ 274   1              {
+ 275   2                      if(task_run_flag & (1 << temp))
+ 276   2                      {
+ 277   3                              if(task_pcb_buf[temp].priority < task_pcb_buf[current_id].priority)
+ 278   3                              {
+ 279   4                                      if(task_pcb_buf[temp].delay != 0)
+ 280   4                                      {
+ 281   5                                              task_pcb_buf[temp].delay --;                    
+ 282   5                                      }
+ 283   4                                      else if(task_pcb_buf[temp].suspend == 1)
+ 284   4                                              continue;
+ 285   4                                      else
+ 286   4                                      {
+ 287   5                                              current_id = temp;              
+ 288   5                                              task_pcb_buf[current_id].run_time ++;   //ÈÎÎñ¿ÉÒÔÇĞ»»£¬²¢ÇÒ¸ÃÈÎÎñµÄÖ´ĞĞÊ±¼ä¼ÓÒ»£¬ÓÃÀ´Í³¼ÆCPUÊ¹ÓÃÂÊ
+ 289   5                                      }               
+ 290   4                              }
+ 291   3                      }
+ 292   2              }
+ 293   1      
+ 294   1              /* Èç¹ûÈÎÎñ0ÓĞÑÓÊ±µÄ»°£¬½«ÈÎÎñ0µÄÑÓÊ±¼õÒ»£¨Ò»°ãÓÃ²»µ½£© */
+ 295   1              if(task_pcb_buf[0].delay != 0)
+ 296   1              {
+ 297   2                      task_pcb_buf[0].delay --;                       
+C51 COMPILER V9.02   CORE                                                                  03/26/2016 10:28:04 PAGE 6   
+
+ 298   2              }
+ 299   1      #ifdef XDATA_SP_BUFFER
+ 300   1              SP ++;  //ÉÏ¸öforÑ­»·³öÀ´µÄÊ±ºòSPµÄÖµ¶à¼õÁËÒ»´Î
+ 301   1              sp_count = task_pcb_buf[current_id].sp;         //½«ÉÏ´Î¼ÇÂ¼µÄsp_countµÄÖµÔÙ´Î¸³Öµ¸øsp_count
+ 302   1              /* ½«xdataÇøÓò´æ´¢µÄÕ»²ÎÊıÖØĞÂ¸³Öµ¸øÊµ¼ÊÔËĞĞµÄÕ»¿Õ¼ä */
+ 303   1              for(; sp_count >= 0; SP++)
+ 304   1              {
+ 305   2                      ((unsigned char idata*)task_sp_bottom)[sp_count] = task_sp[current_id][sp_count];
+ 306   2                      sp_count --;
+ 307   2              }
+ 308   1              SP --;  //forÑ­»·ÍË³öµÄÊ±ºòĞèÒª¼õÈ¥Ò»¸öÊı
+ 309   1              task_pcb_buf[current_id].new_circle = 1;        //ÈÎÎñÓÖÒ»´Îµ½´ï
+ 310   1      #endif
+ 311   1      #ifdef IDATA_SP_BUFFER
+                      SP = task_pcb_buf[current_id].sp;       //°ÑÒªÔËĞĞµÄÈÎÎñSPµØÖ·´«ÈëSP¼Ä´æÆ÷
+                      task_pcb_buf[current_id].new_circle = 1;        //ÈÎÎñÓÖÒ»´Îµ½´ï
+              #endif
+ 315   1              task_runtime ++;        //ÏµÍ³ÔËĞĞÊ±¼ä¼Ó1
+ 316   1      
+ 317   1              EA = 1; //ÈÎÎñÇĞ»»Íê³É£¬ÖØĞÂ¿ªÆôÖĞ¶Ï
+ 318   1      }
+ 319          
+ 320          /* ÏµÍ³ÈÎÎñÑÓÊ± */
+ 321          void task_delay(unsigned char delay)
+ 322          {
+ 323   1              task_pcb_buf[current_id].delay = delay;
+ 324   1      }
+ 325          
+ 326          /* ÏµÍ³ĞÂÖÜÆÚ¿ªÊ¼ÅĞ¶Ï */
+ 327          unsigned char get_task_newcircle_flag(void)
+ 328          {
+ 329   1              if(task_pcb_buf[current_id].new_circle == 1)    //ÊÇĞÂÖÜÆÚµÄ¿ªÊ¼
+ 330   1              {
+ 331   2                      task_pcb_buf[current_id].new_circle = 0;        //Çå³ı¿ªÊ¼±êÖ¾²¢·µ»Ø1
+ 332   2                      return 1;
+ 333   2              }
+ 334   1              return 0;
+ 335   1      }
+ 336          
+ 337          /* ´òÓ¡»ú×ÊÔ´µÄÊ¹ÓÃ */
+ 338          
+ 339          /* ¶ÑÕ»µÄ²âÊÔ */
+ 340          void sp_test(void)
+ 341          {
+ 342   1              SP = task_sp;
+ 343   1      
+ 344   1      }
+ 345          //      #pragma asm
+ 346          //              PUSH DPL
+ 347          //              PUSH DPH
+ 348          //      #pragma endasm
+ 349          
+ 350          //      void push_ptr(void)
+ 351          //{
+ 352          //      #pragma asm
+ 353          //              PUSH ACC
+ 354          //              PUSH B
+ 355          //              PUSH DPL
+ 356          //              PUSH DPH
+ 357          //              PUSH PSW
+ 358          //              PUSH 0
+ 359          //              PUSH 1
+C51 COMPILER V9.02   CORE                                                                  03/26/2016 10:28:04 PAGE 7   
+
+ 360          //              PUSH 2
+ 361          //              PUSH 3
+ 362          //              PUSH 4
+ 363          //              PUSH 5
+ 364          //              PUSH 6
+ 365          //              PUSH 7
+ 366          //      #pragma endasm
+ 367          //}
+ 368          //
+ 369          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1669    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =    695       1
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1      15
+   IDATA SIZE       =     31    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
